@@ -73,23 +73,23 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.0
-          name: "FormPic v1.0.0 — Official Production Release"
+          tag_name: v1.0.1
+          name: "FormPic v1.0.1 — Official Production Release"
           body: |
-            ## FormPic v1.0.0 — Direct Android APK & AAB Release
+            ## FormPic v1.0.1 — Direct Android APK & AAB Release
             
             FormPic is a privacy-first, on-device photo resizer and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
             
             ### 📥 Download & Install on Android:
-            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.0/app-release.apk)
-            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.0/app-release.aab)
+            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.1/app-release.apk)
+            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.1/app-release.aab)
             
-            ### Key Features:
-            - 🎯 **Exact KB Targets**: Under 25 KB, Under 50 KB, Under 75 KB, Under 100 KB, Custom KB.
-            - 🇮🇳 **Official Indian Government Presets**: Passport Seva (MEA), SSC, UPSC, IBPS, NEET, RRB.
-            - 🔒 **100% On-Device AI**: Zero cloud uploads; your photos never leave your device.
-            - 📷 **CameraX Passport Guide**: Oval guide with eye-level and head height framing.
-            - ✂️ **AI White Background Isolation**: Instant clean white background replacement.
+            ### What's New in v1.0.1:
+            - 🎯 **Fixed Quick Preset Highlight**: Selection highlight now reactively tracks whether 25 KB, 50 KB, 75 KB, or 100 KB is selected.
+            - 📑 **Smart Deep-Link Tab Navigation**: "See All" opens Target KB, while "Official Exam Presets" opens Government & Exams directly.
+            - ⚡ **Dynamic Active Target Command Center**: Home Screen Hero Card dynamically displays the exact specifications, byte limits, and dimensions for the selected exam.
+            - 🏛️ **Top Exam Cards on Home**: 1-tap direct selection for SSC, UPSC, IBPS / SBI, and Passport Seva.
+            - 👁️ **Custom Parameter Visibility Fix**: Input fields now guarantee high-contrast dark text regardless of system dark mode.
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab

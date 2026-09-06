@@ -30,10 +30,15 @@ import com.formpic.app.ui.screens.TouchUpScreen
 import com.formpic.app.ui.theme.FormPicTheme
 import com.formpic.app.ui.viewmodel.PhotoProcessViewModel
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+
 sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object Camera : Screen("camera")
-    data object Presets : Screen("presets")
+    data object Presets : Screen("presets?tab={tab}") {
+        fun createRoute(tab: Int = 0): String = "presets?tab=$tab"
+    }
     data object Processing : Screen("processing")
     data object TouchUp : Screen("touch_up")
     data object ResultPreview : Screen("result_preview")
@@ -101,11 +106,15 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
+                selectedPreset = selectedPreset,
+                onPresetSelected = { preset -> viewModel.selectPreset(preset) },
                 onNavigateToCamera = { navController.navigate(Screen.Camera.route) },
                 onPhotoSelected = { uri, preset ->
                     viewModel.startProcessingFromUri(uri, preset)
                 },
-                onNavigateToPresets = { navController.navigate(Screen.Presets.route) },
+                onNavigateToPresets = { tabIndex ->
+                    navController.navigate(Screen.Presets.createRoute(tabIndex))
+                },
                 onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
                 onNavigateToHelp = { navController.navigate(Screen.HelpFaq.route) }
             )
@@ -120,9 +129,19 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
             )
         }
 
-        composable(Screen.Presets.route) {
+        composable(
+            route = Screen.Presets.route,
+            arguments = listOf(
+                navArgument("tab") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+            )
+        ) { backStackEntry ->
+            val tab = backStackEntry.arguments?.getInt("tab") ?: 0
             PresetSelectionScreen(
                 currentPreset = selectedPreset,
+                initialTabIndex = tab,
                 onPresetSelected = { preset ->
                     viewModel.selectPreset(preset)
                     navController.popBackStack()

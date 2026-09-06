@@ -28,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -64,11 +65,12 @@ import com.formpic.app.ui.theme.SlateTextSecondary
 @Composable
 fun PresetSelectionScreen(
     currentPreset: PhotoPreset,
+    initialTabIndex: Int = 0,
     onPresetSelected: (PhotoPreset) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
-    var selectedPreset by remember { mutableStateOf(currentPreset) }
+    var selectedTabIndex by remember(initialTabIndex) { mutableIntStateOf(initialTabIndex) }
+    var selectedPreset by remember(currentPreset) { mutableStateOf(currentPreset) }
 
     // Custom form states
     var customKbText by remember { mutableStateOf("45") }
@@ -110,7 +112,11 @@ fun PresetSelectionScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = NavyDeep)
                 ) {
                     Text(
-                        text = "Apply Requirement",
+                        text = if (selectedTabIndex == 2) {
+                            "Apply Custom (${customKbText.ifBlank { "50" }} KB)"
+                        } else {
+                            "Apply ${selectedPreset.title}"
+                        },
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -231,13 +237,28 @@ fun PresetSelectionScreen(
 
                                 Spacer(modifier = Modifier.height(16.dp))
 
+                                val textFieldColors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = SlateTextPrimary,
+                                    unfocusedTextColor = SlateTextPrimary,
+                                    focusedContainerColor = Color.White,
+                                    unfocusedContainerColor = Color.White,
+                                    cursorColor = BlueAccent,
+                                    focusedBorderColor = BlueAccent,
+                                    unfocusedBorderColor = SlateBorder,
+                                    focusedLabelColor = BlueAccent,
+                                    unfocusedLabelColor = SlateTextSecondary,
+                                    focusedSupportingTextColor = SlateTextSecondary,
+                                    unfocusedSupportingTextColor = SlateTextSecondary
+                                )
+
                                 OutlinedTextField(
                                     value = customKbText,
                                     onValueChange = { customKbText = it.filter { ch -> ch.isDigit() } },
                                     label = { Text("Target Maximum File Size (KB)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.fillMaxWidth(),
-                                    supportingText = { Text("Guaranteed strict <= target limit") }
+                                    supportingText = { Text("Guaranteed strict <= target limit") },
+                                    colors = textFieldColors
                                 )
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -251,14 +272,16 @@ fun PresetSelectionScreen(
                                         onValueChange = { customWidthText = it.filter { ch -> ch.isDigit() } },
                                         label = { Text("Width (px)") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
+                                        colors = textFieldColors
                                     )
                                     OutlinedTextField(
                                         value = customHeightText,
                                         onValueChange = { customHeightText = it.filter { ch -> ch.isDigit() } },
                                         label = { Text("Height (px)") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.weight(1f),
+                                        colors = textFieldColors
                                     )
                                 }
                             }

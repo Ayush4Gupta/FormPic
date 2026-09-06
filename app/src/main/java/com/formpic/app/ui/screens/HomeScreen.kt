@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.formpic.app.R
 import com.formpic.app.data.model.PhotoPreset
+import com.formpic.app.data.model.PresetCategory
 import com.formpic.app.data.repository.PresetRepository
 import com.formpic.app.ui.components.FormPicTopAppBar
 import com.formpic.app.ui.theme.BlueAccent
@@ -59,18 +61,18 @@ import com.formpic.app.ui.theme.SlateTextSecondary
 
 @Composable
 fun HomeScreen(
+    selectedPreset: PhotoPreset,
+    onPresetSelected: (PhotoPreset) -> Unit,
     onNavigateToCamera: () -> Unit,
     onPhotoSelected: (Uri, PhotoPreset) -> Unit,
-    onNavigateToPresets: () -> Unit,
+    onNavigateToPresets: (tabIndex: Int) -> Unit,
     onNavigateToSettings: () -> Unit,
     onNavigateToHelp: () -> Unit
 ) {
-    var pendingPreset: PhotoPreset = PresetRepository.defaultPreset
-
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { onPhotoSelected(it, pendingPreset) }
+        uri?.let { onPhotoSelected(it, selectedPreset) }
     }
 
     Scaffold(
@@ -91,34 +93,60 @@ fun HomeScreen(
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Hero Card
+            // Dynamic Hero Card ("Active Target Command Center")
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = NavyDeep),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp)
+                    modifier = Modifier.padding(20.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFF1E3A5F))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFF1E3A5F))
+                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(7.dp)
+                                        .clip(CircleShape)
+                                        .background(EmeraldSuccess)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "ACTIVE TARGET",
+                                    color = Color(0xFF60A5FA),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.5.sp
+                                )
+                            }
+                        }
+
                         Text(
-                            text = "OFFICIAL SPECIFICATIONS",
-                            color = Color(0xFF60A5FA),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 0.5.sp
+                            text = "Change Spec ⚙",
+                            color = Color(0xFF93C5FD),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.clickable {
+                                val targetTab = if (selectedPreset.category == PresetCategory.GOVERNMENT_EXAMS) 1 else 0
+                                onNavigateToPresets(targetTab)
+                            }
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
                     Text(
-                        text = stringResource(R.string.home_hero_title),
+                        text = selectedPreset.title,
                         color = Color.White,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
@@ -128,10 +156,91 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
-                        text = stringResource(R.string.home_hero_subtitle),
+                        text = selectedPreset.subtitle,
                         color = Color(0xFFCBD5E1),
-                        fontSize = 14.sp
+                        fontSize = 13.sp,
+                        lineHeight = 18.sp
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Spec Badges
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFF1E293B))
+                                .padding(vertical = 8.dp, horizontal = 10.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "MAX SIZE",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "≤ ${selectedPreset.targetMaxKb} KB",
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1.1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFF1E293B))
+                                .padding(vertical = 8.dp, horizontal = 10.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "DIMENSIONS",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = if (selectedPreset.widthMm > 0) "${selectedPreset.widthMm.toInt()}×${selectedPreset.heightMm.toInt()} mm" else "${selectedPreset.widthPx}×${selectedPreset.heightPx} px",
+                                    color = Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFF1E293B))
+                                .padding(vertical = 8.dp, horizontal = 10.dp)
+                        ) {
+                            Column {
+                                Text(
+                                    text = "BACKGROUND",
+                                    color = Color(0xFF94A3B8),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Pure White",
+                                    color = EmeraldSuccess,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
             }
 
@@ -163,7 +272,6 @@ fun HomeScreen(
 
             OutlinedButton(
                 onClick = {
-                    pendingPreset = PresetRepository.defaultPreset
                     galleryLauncher.launch("image/*")
                 },
                 modifier = Modifier
@@ -185,9 +293,9 @@ fun HomeScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(26.dp))
 
-            // Quick Target Size Presets
+            // Quick Target Size Presets Section
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -200,79 +308,193 @@ fun HomeScreen(
                     color = SlateTextPrimary
                 )
                 Text(
-                    text = "See All",
+                    text = "All Sizes →",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = BlueAccent,
-                    modifier = Modifier.clickable { onNavigateToPresets() }
+                    modifier = Modifier.clickable { onNavigateToPresets(0) }
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Quick size pill grid
+            // Quick Size Pills (Reactive Selection Fix)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 PresetRepository.quickKbPresets.forEach { preset ->
-                    val isDefault = preset.id == "quick_50kb"
+                    val isSelected = preset.id == selectedPreset.id
                     Surface(
                         modifier = Modifier
                             .weight(1f)
-                            .height(76.dp)
+                            .height(78.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .clickable {
-                                pendingPreset = preset
-                                galleryLauncher.launch("image/*")
+                                onPresetSelected(preset)
                             },
-                        color = if (isDefault) BlueSoftBg else Color.White,
+                        color = if (isSelected) BlueSoftBg else Color.White,
                         shape = RoundedCornerShape(12.dp),
                         border = androidx.compose.foundation.BorderStroke(
-                            1.dp,
-                            if (isDefault) BlueAccent else SlateBorder
+                            if (isSelected) 2.dp else 1.dp,
+                            if (isSelected) BlueAccent else SlateBorder
                         )
                     ) {
                         Column(
-                            modifier = Modifier.padding(8.dp),
+                            modifier = Modifier.padding(6.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
                                 text = preset.title,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = if (isDefault) BlueAccent else SlateTextPrimary
+                                fontSize = 12.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                color = if (isSelected) BlueAccent else SlateTextPrimary
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = if (isDefault) "Most Used" else "Standard",
-                                fontSize = 10.sp,
-                                color = if (isDefault) BlueAccent else SlateTextSecondary
-                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(BlueAccent)
+                                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                                ) {
+                                    Text(
+                                        text = "Active ✓",
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = if (preset.id == "quick_50kb") "Popular" else "Select",
+                                    fontSize = 10.sp,
+                                    color = SlateTextSecondary
+                                )
+                            }
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Official Indian Presets Banner Card
+            // Official Indian Exam Presets Section
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Official Indian Exams",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = SlateTextPrimary
+                )
+                Text(
+                    text = "View All (7+) →",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = BlueAccent,
+                    modifier = Modifier.clickable { onNavigateToPresets(1) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 4 Top Popular Exam Cards (2x2 Grid)
+            val topExams = listOf(
+                PresetRepository.officialExamPresets[1], // SSC
+                PresetRepository.officialExamPresets[2], // UPSC
+                PresetRepository.officialExamPresets[3], // IBPS
+                PresetRepository.officialExamPresets[0]  // Passport Seva
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                for (i in 0 until topExams.size step 2) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        for (j in 0..1) {
+                            val exam = topExams[i + j]
+                            val isExamSelected = exam.id == selectedPreset.id
+                            Surface(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable { onPresetSelected(exam) },
+                                color = if (isExamSelected) BlueSoftBg else Color.White,
+                                shape = RoundedCornerShape(12.dp),
+                                border = androidx.compose.foundation.BorderStroke(
+                                    if (isExamSelected) 2.dp else 1.dp,
+                                    if (isExamSelected) BlueAccent else SlateBorder
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = when (exam.id) {
+                                                "official_ssc" -> "SSC Exams"
+                                                "official_upsc" -> "UPSC Exams"
+                                                "official_ibps_sbi" -> "IBPS / Bank"
+                                                "official_passport_india" -> "Passport Seva"
+                                                else -> exam.title
+                                            },
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (isExamSelected) BlueAccent else SlateTextPrimary
+                                        )
+                                        if (isExamSelected) {
+                                            Icon(
+                                                imageVector = Icons.Default.CheckCircle,
+                                                contentDescription = null,
+                                                tint = BlueAccent,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Max ${exam.targetMaxKb} KB • ${exam.widthMm.toInt()}×${exam.heightMm.toInt()} mm",
+                                        fontSize = 11.sp,
+                                        color = if (isExamSelected) BlueAccent else SlateTextSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Official Indian Presets Banner Card (Navigates to Tab 1)
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onNavigateToPresets() },
+                    .clickable { onNavigateToPresets(1) },
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(14.dp),
                 border = androidx.compose.foundation.BorderStroke(1.dp, SlateBorder)
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(14.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(44.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
                             .background(EmeraldBg),
                         contentAlignment = Alignment.Center
@@ -281,21 +503,75 @@ fun HomeScreen(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = null,
                             tint = EmeraldSuccess,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.width(14.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = "Official Indian Exam Presets",
-                            fontSize = 15.sp,
+                            text = "Explore All Exam Presets",
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = SlateTextPrimary
                         )
                         Text(
-                            text = "Passport Seva, SSC, UPSC, IBPS, NEET",
+                            text = "NEET UG, RRB Railway, PAN Card, State PSCs…",
+                            fontSize = 12.sp,
+                            color = SlateTextSecondary
+                        )
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = Color(0xFF94A3B8)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Custom Requirements Card (Navigates to Tab 2)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onNavigateToPresets(2) },
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(14.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, SlateBorder)
+            ) {
+                Row(
+                    modifier = Modifier.padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFEFF6FF)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Tune,
+                            contentDescription = null,
+                            tint = BlueAccent,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Need Custom Dimensions or KB Limit?",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = SlateTextPrimary
+                        )
+                        Text(
+                            text = "Set exact pixels, height, width & file size",
                             fontSize = 12.sp,
                             color = SlateTextSecondary
                         )
@@ -316,7 +592,7 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color(0xFFF1F5F9), RoundedCornerShape(12.dp))
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -336,3 +612,4 @@ fun HomeScreen(
         }
     }
 }
+
