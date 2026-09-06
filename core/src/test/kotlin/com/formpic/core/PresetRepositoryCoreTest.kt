@@ -17,6 +17,9 @@ class PresetRepositoryCoreTest {
         assertEquals(PresetCategory.QUICK_KB, defaultPreset.category)
         assertEquals(false, defaultPreset.requiresWhiteBackground)
         assertEquals(false, defaultPreset.isWhiteBackgroundMandatory)
+        assertEquals(false, defaultPreset.isSignature)
+        assertEquals(true, defaultPreset.isPassportSize)
+        assertEquals(false, defaultPreset.isPassportSizeMandatory)
     }
 
     @Test
@@ -29,6 +32,9 @@ class PresetRepositoryCoreTest {
         PresetRepository.quickKbPresets.forEach {
             assertEquals(false, it.requiresWhiteBackground)
             assertEquals(false, it.isWhiteBackgroundMandatory)
+            assertEquals(false, it.isSignature)
+            assertEquals(true, it.isPassportSize)
+            assertEquals(false, it.isPassportSizeMandatory)
         }
     }
 
@@ -41,6 +47,9 @@ class PresetRepositoryCoreTest {
         assertEquals(45f, passport.heightMm)
         assertTrue(passport.requiresWhiteBackground)
         assertTrue(passport.isWhiteBackgroundMandatory)
+        assertEquals(false, passport.isSignature)
+        assertEquals(true, passport.isPassportSize)
+        assertEquals(true, passport.isPassportSizeMandatory)
         assertTrue(passport.officialSource.contains("passportindia.gov.in"))
     }
 
@@ -53,6 +62,8 @@ class PresetRepositoryCoreTest {
         assertEquals(45f, ssc.heightMm)
         assertTrue(ssc.requiresWhiteBackground)
         assertTrue(ssc.isWhiteBackgroundMandatory)
+        assertEquals(true, ssc.isPassportSize)
+        assertEquals(true, ssc.isPassportSizeMandatory)
     }
 
     @Test
@@ -62,6 +73,8 @@ class PresetRepositoryCoreTest {
         assertEquals(1.0f, upsc!!.aspectRatio, 0.01f)
         assertTrue(upsc.targetMaxKb <= 300)
         assertTrue(upsc.requiresWhiteBackground)
+        assertEquals(false, upsc.isPassportSize)
+        assertEquals(true, upsc.isPassportSizeMandatory)
     }
 
     @Test
@@ -72,6 +85,7 @@ class PresetRepositoryCoreTest {
         assertEquals(200, ibps.widthPx)
         assertEquals(230, ibps.heightPx)
         assertTrue(ibps.requiresWhiteBackground)
+        assertEquals(true, ibps.isPassportSize)
     }
 
     @Test
@@ -83,16 +97,22 @@ class PresetRepositoryCoreTest {
         assertNotNull(sscSig)
         assertEquals(20, sscSig!!.targetMaxKb)
         assertEquals(false, sscSig.requiresWhiteBackground)
+        assertEquals(true, sscSig.isSignature)
+        assertEquals(false, sscSig.isPassportSize)
 
         val ibpsSig = sigs.find { it.id == "official_signature_ibps" }
         assertNotNull(ibpsSig)
         assertEquals(20, ibpsSig!!.targetMaxKb)
         assertEquals(false, ibpsSig.requiresWhiteBackground)
+        assertEquals(true, ibpsSig.isSignature)
+        assertEquals(false, ibpsSig.isPassportSize)
 
         val upscSig = sigs.find { it.id == "official_signature_upsc" }
         assertNotNull(upscSig)
         assertEquals(200, upscSig!!.targetMaxKb)
         assertEquals(false, upscSig.requiresWhiteBackground)
+        assertEquals(true, upscSig.isSignature)
+        assertEquals(false, upscSig.isPassportSize)
 
         assertEquals(
             PresetRepository.officialExamPresets.size + sigs.size,
@@ -106,10 +126,14 @@ class PresetRepositoryCoreTest {
         assertTrue(customLow.targetMaxKb >= 15)
         assertTrue(customLow.widthPx >= 150)
         assertEquals(false, customLow.requiresWhiteBackground)
+        assertEquals(false, customLow.isSignature)
+        assertEquals(false, customLow.isPassportSize)
 
         val customHigh = PresetRepository.createCustomPreset(targetKb = 10000, widthPx = 8000, heightPx = 9000)
         assertTrue(customHigh.targetMaxKb <= 2000)
         assertTrue(customHigh.widthPx <= 4000)
         assertEquals(false, customHigh.requiresWhiteBackground)
+        assertEquals(false, customHigh.isSignature)
+        assertEquals(false, customHigh.isPassportSize)
     }
 }

@@ -17,7 +17,10 @@ object PresetRepository {
         category = PresetCategory.QUICK_KB,
         tips = "Most Indian application portals require photos under 50 KB.",
         requiresWhiteBackground = false,
-        isWhiteBackgroundMandatory = false
+        isWhiteBackgroundMandatory = false,
+        isSignature = false,
+        isPassportSize = true,
+        isPassportSizeMandatory = false
     )
 
     val quickKbPresets: List<PhotoPreset> = listOf(
@@ -33,7 +36,10 @@ object PresetRepository {
             category = PresetCategory.QUICK_KB,
             tips = "Optimized to achieve compact size while preserving facial features.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = false
         ),
         defaultPreset,
         PhotoPreset(
@@ -48,7 +54,10 @@ object PresetRepository {
             category = PresetCategory.QUICK_KB,
             tips = "Crisp resolution balanced with file size limits.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = false
         ),
         PhotoPreset(
             id = "quick_100kb",
@@ -62,7 +71,10 @@ object PresetRepository {
             category = PresetCategory.QUICK_KB,
             tips = "High quality conforming to digital passport guidelines.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = false
         )
     )
 
@@ -81,7 +93,10 @@ object PresetRepository {
             verifiedDate = "2024–2026 Standards",
             tips = "Plain white background, full face centered, 70–80% head height.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_ssc",
@@ -97,7 +112,10 @@ object PresetRepository {
             verifiedDate = "Current Commission Notice",
             tips = "No cap, no spectacles with tint, both ears visible.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_upsc",
@@ -111,7 +129,10 @@ object PresetRepository {
             verifiedDate = "UPSC One-Time Registration Guidelines",
             tips = "Photo must show clear front view with 75% face coverage.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = false,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_ibps_sbi",
@@ -127,7 +148,10 @@ object PresetRepository {
             verifiedDate = "IBPS Recruitment Guidelines",
             tips = "Strict maximum 50 KB limit. Upload server immediately rejects larger files.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_neet_nta",
@@ -143,7 +167,10 @@ object PresetRepository {
             verifiedDate = "NTA Information Bulletin",
             tips = "White background without mask, ears clearly visible.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_rrb",
@@ -159,7 +186,10 @@ object PresetRepository {
             verifiedDate = "RRB CEN Guidelines",
             tips = "Clear front view without goggles, hats or tinted glasses.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         ),
         PhotoPreset(
             id = "official_pan",
@@ -175,7 +205,10 @@ object PresetRepository {
             verifiedDate = "Income Tax / NSDL Portal",
             tips = "Clean color photo with pure white background.",
             requiresWhiteBackground = true,
-            isWhiteBackgroundMandatory = true
+            isWhiteBackgroundMandatory = true,
+            isSignature = false,
+            isPassportSize = true,
+            isPassportSizeMandatory = true
         )
     )
 
@@ -194,7 +227,10 @@ object PresetRepository {
             verifiedDate = "Current Commission Notice",
             tips = "Sign on white paper with black ink. Pure white background removal is bypassed to preserve signature stroke fidelity.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = true,
+            isPassportSize = false,
+            isPassportSizeMandatory = false
         ),
         PhotoPreset(
             id = "official_signature_ibps",
@@ -210,7 +246,10 @@ object PresetRepository {
             verifiedDate = "IBPS Current Standards",
             tips = "Strict maximum 20 KB limit. Background removal bypassed for clean ink signature.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = true,
+            isPassportSize = false,
+            isPassportSizeMandatory = false
         ),
         PhotoPreset(
             id = "official_signature_upsc",
@@ -224,7 +263,10 @@ object PresetRepository {
             verifiedDate = "UPSC OTR Standards",
             tips = "Signature must be clear with black or blue ink on white paper.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = true,
+            isPassportSize = false,
+            isPassportSizeMandatory = false
         )
     )
 
@@ -245,7 +287,10 @@ object PresetRepository {
             category = PresetCategory.CUSTOM,
             tips = "Custom configuration with guaranteed size limit.",
             requiresWhiteBackground = false,
-            isWhiteBackgroundMandatory = false
+            isWhiteBackgroundMandatory = false,
+            isSignature = false,
+            isPassportSize = false,
+            isPassportSizeMandatory = false
         )
     }
 }

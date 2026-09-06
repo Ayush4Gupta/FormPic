@@ -27,7 +27,10 @@ data class PhotoPreset(
     val verifiedDate: String = "",
     val tips: String = "",
     val requiresWhiteBackground: Boolean = false,
-    val isWhiteBackgroundMandatory: Boolean = false
+    val isWhiteBackgroundMandatory: Boolean = false,
+    val isSignature: Boolean = false,
+    val isPassportSize: Boolean = true,
+    val isPassportSizeMandatory: Boolean = false
 ) {
     val aspectRatio: Float
         get() = if (heightPx > 0) widthPx.toFloat() / heightPx.toFloat() else 35f / 45f

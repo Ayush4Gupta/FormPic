@@ -70,6 +70,7 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
     val processingPhase by viewModel.processingPhase.collectAsState()
     val selectedPreset by viewModel.selectedPreset.collectAsState()
     val whiteBackgroundEnabled by viewModel.whiteBackgroundEnabled.collectAsState()
+    val passportSizeEnabled by viewModel.passportSizeEnabled.collectAsState()
 
     // Observe processing phase changes to navigate to processing and result screens automatically
     LaunchedEffect(processingPhase) {
@@ -109,8 +110,10 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
             HomeScreen(
                 selectedPreset = selectedPreset,
                 whiteBackgroundEnabled = whiteBackgroundEnabled,
+                passportSizeEnabled = passportSizeEnabled,
                 onPresetSelected = { preset -> viewModel.selectPreset(preset) },
                 onToggleWhiteBackground = { enabled -> viewModel.setWhiteBackgroundEnabled(enabled) },
+                onTogglePassportSize = { enabled -> viewModel.setPassportSizeEnabled(enabled) },
                 onNavigateToCamera = { navController.navigate(Screen.Camera.route) },
                 onPhotoSelected = { uri, preset ->
                     viewModel.startProcessingFromUri(uri, preset)
@@ -163,7 +166,9 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
                 ResultPreviewScreen(
                     result = result,
                     whiteBackgroundEnabled = whiteBackgroundEnabled,
+                    passportSizeEnabled = passportSizeEnabled,
                     onToggleWhiteBackground = { viewModel.toggleBackgroundOnCurrentResult() },
+                    onTogglePassportSize = { viewModel.toggleFramingOnCurrentResult() },
                     onDownloadClick = { activity ->
                         viewModel.downloadProcessedPhoto(activity) { savedUri ->
                             if (savedUri != null) {

@@ -64,6 +64,44 @@ class FaceDetectorEngine {
         return DetectionResult(cropped, cropRect, qualityReport)
     }
 
+    /**
+     * Crops document or signature cleanly according to required aspect ratio,
+     * completely bypassing facial detection and eye-openness validation.
+     */
+    fun cropDocumentOrSignature(bitmap: Bitmap, targetAspectRatio: Float): DetectionResult {
+        val cropRect = calculateCenterCropRect(bitmap.width, bitmap.height, targetAspectRatio)
+        val cropped = BitmapUtils.cropBitmap(bitmap, cropRect.left, cropRect.top, cropRect.width(), cropRect.height())
+        val report = QualityCheckReport(
+            isFaceDetected = false,
+            isFaceCentered = false,
+            faceCoverageRatio = 0f,
+            isRatioAcceptable = true,
+            isTiltAcceptable = true,
+            areEyesOpen = true,
+            warnings = emptyList(),
+            successes = listOf("Signature framed cleanly for portal submission.")
+        )
+        return DetectionResult(cropped, cropRect, report)
+    }
+
+    /**
+     * Preserves candidate's original photo framing without forcing passport crop.
+     */
+    fun cropWithOriginalFraming(bitmap: Bitmap): DetectionResult {
+        val cropRect = Rect(0, 0, bitmap.width, bitmap.height)
+        val report = QualityCheckReport(
+            isFaceDetected = false,
+            isFaceCentered = false,
+            faceCoverageRatio = 0f,
+            isRatioAcceptable = true,
+            isTiltAcceptable = true,
+            areEyesOpen = true,
+            warnings = emptyList(),
+            successes = listOf("Original photo framing preserved.")
+        )
+        return DetectionResult(bitmap, cropRect, report)
+    }
+
     private suspend fun detectFaces(bitmap: Bitmap): List<Face> = suspendCancellableCoroutine { continuation ->
         val image = InputImage.fromBitmap(bitmap, 0)
         detector.process(image)

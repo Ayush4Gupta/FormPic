@@ -73,23 +73,23 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.3
-          name: "FormPic v1.0.3 — Official Production Release"
+          tag_name: v1.0.4
+          name: "FormPic v1.0.4 — Official Production Release"
           body: |
-            ## FormPic v1.0.3 — Direct Android APK & AAB Release
+            ## FormPic v1.0.4 — Direct Android APK & AAB Release
             
-            FormPic is a privacy-first, on-device photo resizer and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
+            FormPic is a privacy-first, on-device photo resizer, signature processor, and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
             
             ### 📥 Download & Install on Android:
-            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.3/app-release.apk)
-            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.3/app-release.aab)
+            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.4/app-release.apk)
+            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.4/app-release.aab)
             
-            ### What's New in v1.0.3:
-            - ⚪ **Optional Pure White Background**: Quick KB targets (25, 50, 75, 100 KB) and Custom sizes now default to keeping your original background, with 1-tap toggle to apply AI White BG anytime.
-            - 🛡️ **Portal-Compliant Exam Presets**: Official government exam presets (Passport Seva, SSC, UPSC, IBPS, NEET, RRB, PAN Card) enforce pure white background by default to prevent form rejections, with manual studio override available.
-            - ✒️ **Official Signature Presets**: Added official signature presets for SSC (10–20 KB, 140×60 px), IBPS (10–20 KB, 140×60 px), and UPSC (20–300 KB). Background removal is automatically bypassed to keep signature ink strokes crisp and dark.
-            - ⚡ **1-Tap Live Background Swapping**: Switch between Pure White (AI) and Original Background directly on the Result Preview screen in < 200 ms without re-uploading!
-            - 🎨 **High-Contrast Custom Input**: Explicit high-contrast text styling for custom KB, width, and height inputs.
+            ### What's New in v1.0.4:
+            - ✒️ **Fixed Signature Processing (No False Eye Checks)**: Dedicated signature pipeline that completely bypasses ML Kit face detection and eye-openness checks. Signature cursive handwriting is no longer mistaken for facial loops, and shows verified green badge: *Signature Approved for Official Uploads*.
+            - 📐 **Optional Passport Size (3.5 × 4.5 cm) Framing**: Quick KB targets (25, 50, 75, 100 KB) and Custom sizes can now toggle between Passport Size framing and Original Photo Aspect Ratio. Official exam presets enforce portal-mandated framing by default.
+            - ⚡ **Dual 1-Tap Live Swappers (< 200 ms)**: Instantly swap between Passport Size ⇄ Original Framing and Pure White ⇄ Original Background directly on the Result Preview screen without re-uploading!
+            - 🎛️ **Dual-Command Center on Home Screen**: Intuitive switchers for Framing Mode and Background Mode with clear Portal-Mandated status indicators.
+            - 🏷️ **Comprehensive Preset Badges**: Preset selection screen clearly indicates both Framing rules (3.5×4.5 cm, Square, Signature Ratio) and Background requirements.
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab

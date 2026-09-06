@@ -63,8 +63,10 @@ import com.formpic.app.ui.theme.SlateTextSecondary
 fun HomeScreen(
     selectedPreset: PhotoPreset,
     whiteBackgroundEnabled: Boolean,
+    passportSizeEnabled: Boolean,
     onPresetSelected: (PhotoPreset) -> Unit,
     onToggleWhiteBackground: (Boolean) -> Unit,
+    onTogglePassportSize: (Boolean) -> Unit,
     onNavigateToCamera: () -> Unit,
     onPhotoSelected: (Uri, PhotoPreset) -> Unit,
     onNavigateToPresets: (tabIndex: Int) -> Unit,
@@ -124,7 +126,7 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "ACTIVE TARGET",
+                                    text = if (selectedPreset.isSignature) "SIGNATURE TARGET" else "ACTIVE TARGET",
                                     color = Color(0xFF60A5FA),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
@@ -204,14 +206,19 @@ fun HomeScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "DIMENSIONS",
+                                    text = "FRAMING",
                                     color = Color(0xFF94A3B8),
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = if (selectedPreset.widthMm > 0) "${selectedPreset.widthMm.toInt()}×${selectedPreset.heightMm.toInt()} mm" else "${selectedPreset.widthPx}×${selectedPreset.heightPx} px",
+                                    text = when {
+                                        selectedPreset.isSignature -> "Signature Ink"
+                                        passportSizeEnabled && selectedPreset.widthMm > 0 -> "${selectedPreset.widthMm.toInt()}×${selectedPreset.heightMm.toInt()} mm"
+                                        passportSizeEnabled -> "${selectedPreset.widthPx}×${selectedPreset.heightPx} px"
+                                        else -> "Original Ratio"
+                                    },
                                     color = Color.White,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
@@ -235,8 +242,12 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = if (whiteBackgroundEnabled) "Pure White" else "Original BG",
-                                    color = if (whiteBackgroundEnabled) EmeraldSuccess else Color(0xFF93C5FD),
+                                    text = when {
+                                        selectedPreset.isSignature -> "White Paper"
+                                        whiteBackgroundEnabled -> "Pure White"
+                                        else -> "Original BG"
+                                    },
+                                    color = if (whiteBackgroundEnabled && !selectedPreset.isSignature) EmeraldSuccess else Color(0xFF93C5FD),
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -248,116 +259,267 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Background Mode Switcher (Optional for Quick KB, Portal-mandated for Official Exams)
-            if (selectedPreset.isWhiteBackgroundMandatory) {
+            // Command Center Controls: Framing & Background Modes
+            if (selectedPreset.isSignature) {
+                // Signature Mode Banner: Informs user face detection & background removal are bypassed
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .clickable { onToggleWhiteBackground(!whiteBackgroundEnabled) },
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (whiteBackgroundEnabled) Color(0xFFECFDF5) else Color(0xFFFFFBEB)
-                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
                     shape = RoundedCornerShape(14.dp),
-                    border = androidx.compose.foundation.BorderStroke(
-                        1.dp,
-                        if (whiteBackgroundEnabled) Color(0xFFA7F3D0) else Color(0xFFFDE68A)
-                    )
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = if (whiteBackgroundEnabled) "🛡️" else "⚠️",
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(text = "✒️", fontSize = 22.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (whiteBackgroundEnabled) "Pure White BG: Portal Mandated" else "Original BG Selected (Exams require White)",
-                                fontSize = 12.sp,
+                                text = "Signature Mode Active",
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (whiteBackgroundEnabled) Color(0xFF065F46) else Color(0xFF92400E)
+                                color = Color(0xFF1E40AF)
                             )
                             Text(
-                                text = if (whiteBackgroundEnabled) "Tap to keep original background if already studio white." else "Tap to restore mandatory pure white background.",
+                                text = "Face detection and eye checks are bypassed. Your signature ink strokes are preserved cleanly on white paper under ${selectedPreset.targetMaxKb} KB.",
                                 fontSize = 11.sp,
-                                color = if (whiteBackgroundEnabled) Color(0xFF047857) else Color(0xFFB45309)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(if (whiteBackgroundEnabled) EmeraldSuccess else Color(0xFFD97706))
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                text = if (whiteBackgroundEnabled) "ON ✓" else "OFF",
-                                color = Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
+                                color = Color(0xFF1D4ED8),
+                                lineHeight = 16.sp
                             )
                         }
                     }
                 }
             } else {
-                Surface(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    color = Color(0xFFE2E8F0).copy(alpha = 0.6f),
-                    shape = RoundedCornerShape(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        // Option 1: Keep Original Background
-                        Surface(
+                    // Framing Mode Switcher (Passport Size 3.5×4.5 cm vs Original Photo)
+                    if (selectedPreset.isPassportSizeMandatory) {
+                        Card(
                             modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { onToggleWhiteBackground(false) },
-                            color = if (!whiteBackgroundEnabled) Color.White else Color.Transparent,
-                            shape = RoundedCornerShape(10.dp),
-                            border = if (!whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.dp, SlateBorder) else null
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { onTogglePassportSize(!passportSizeEnabled) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (passportSizeEnabled) Color(0xFFF0FDF4) else Color(0xFFFFFBEB)
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (passportSizeEnabled) Color(0xFFBBF7D0) else Color(0xFFFDE68A)
+                            )
                         ) {
                             Row(
-                                modifier = Modifier.padding(vertical = 10.dp),
-                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(
-                                    text = "⚪ Keep Original BG",
-                                    fontSize = 12.sp,
-                                    fontWeight = if (!whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (!whiteBackgroundEnabled) NavyDeep else SlateTextSecondary
-                                )
+                                Text(text = if (passportSizeEnabled) "📐" else "🖼️", fontSize = 16.sp)
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (passportSizeEnabled) "Passport Size (3.5×4.5 cm): Mandated" else "Original Photo Framing Selected",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (passportSizeEnabled) Color(0xFF166534) else Color(0xFF92400E)
+                                    )
+                                    Text(
+                                        text = if (passportSizeEnabled) "Tap to preserve original photo framing without crop." else "Tap to restore mandatory 3.5×4.5 cm passport crop.",
+                                        fontSize = 11.sp,
+                                        color = if (passportSizeEnabled) Color(0xFF15803D) else Color(0xFFB45309)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(if (passportSizeEnabled) EmeraldSuccess else Color(0xFFD97706))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = if (passportSizeEnabled) "ON ✓" else "OFF",
+                                        color = Color.White,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
-
-                        // Option 2: AI Pure White Background
+                    } else {
                         Surface(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .clickable { onToggleWhiteBackground(true) },
-                            color = if (whiteBackgroundEnabled) Color.White else Color.Transparent,
-                            shape = RoundedCornerShape(10.dp),
-                            border = if (whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.5.dp, EmeraldSuccess) else null
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFE2E8F0).copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Row(
-                                modifier = Modifier.padding(vertical = 10.dp),
-                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                // Option 1: Passport Size Crop (3.5 × 4.5 cm)
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(9.dp))
+                                        .clickable { onTogglePassportSize(true) },
+                                    color = if (passportSizeEnabled) Color.White else Color.Transparent,
+                                    shape = RoundedCornerShape(9.dp),
+                                    border = if (passportSizeEnabled) androidx.compose.foundation.BorderStroke(1.5.dp, BlueAccent) else null
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(vertical = 9.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "📐 Passport (3.5×4.5 cm)",
+                                            fontSize = 11.sp,
+                                            fontWeight = if (passportSizeEnabled) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (passportSizeEnabled) BlueAccent else SlateTextSecondary
+                                        )
+                                    }
+                                }
+
+                                // Option 2: Original Photo Framing
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(9.dp))
+                                        .clickable { onTogglePassportSize(false) },
+                                    color = if (!passportSizeEnabled) Color.White else Color.Transparent,
+                                    shape = RoundedCornerShape(9.dp),
+                                    border = if (!passportSizeEnabled) androidx.compose.foundation.BorderStroke(1.dp, SlateBorder) else null
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(vertical = 9.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "🖼️ Original Framing",
+                                            fontSize = 11.sp,
+                                            fontWeight = if (!passportSizeEnabled) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (!passportSizeEnabled) NavyDeep else SlateTextSecondary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Background Mode Switcher (Pure White vs Original Background)
+                    if (selectedPreset.isWhiteBackgroundMandatory) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(14.dp))
+                                .clickable { onToggleWhiteBackground(!whiteBackgroundEnabled) },
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (whiteBackgroundEnabled) Color(0xFFECFDF5) else Color(0xFFFFFBEB)
+                            ),
+                            shape = RoundedCornerShape(14.dp),
+                            border = androidx.compose.foundation.BorderStroke(
+                                1.dp,
+                                if (whiteBackgroundEnabled) Color(0xFFA7F3D0) else Color(0xFFFDE68A)
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "🪄 Pure White (AI)",
-                                    fontSize = 12.sp,
-                                    fontWeight = if (whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (whiteBackgroundEnabled) EmeraldSuccess else SlateTextSecondary
+                                    text = if (whiteBackgroundEnabled) "🛡️" else "⚠️",
+                                    fontSize = 16.sp
                                 )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = if (whiteBackgroundEnabled) "Pure White BG: Portal Mandated" else "Original BG Selected (Exams require White)",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (whiteBackgroundEnabled) Color(0xFF065F46) else Color(0xFF92400E)
+                                    )
+                                    Text(
+                                        text = if (whiteBackgroundEnabled) "Tap to keep original background if already studio white." else "Tap to restore mandatory pure white background.",
+                                        fontSize = 11.sp,
+                                        color = if (whiteBackgroundEnabled) Color(0xFF047857) else Color(0xFFB45309)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(if (whiteBackgroundEnabled) EmeraldSuccess else Color(0xFFD97706))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                ) {
+                                    Text(
+                                        text = if (whiteBackgroundEnabled) "ON ✓" else "OFF",
+                                        color = Color.White,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color(0xFFE2E8F0).copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                // Option 1: Keep Original Background
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(9.dp))
+                                        .clickable { onToggleWhiteBackground(false) },
+                                    color = if (!whiteBackgroundEnabled) Color.White else Color.Transparent,
+                                    shape = RoundedCornerShape(9.dp),
+                                    border = if (!whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.dp, SlateBorder) else null
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(vertical = 9.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "⚪ Keep Original BG",
+                                            fontSize = 11.sp,
+                                            fontWeight = if (!whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (!whiteBackgroundEnabled) NavyDeep else SlateTextSecondary
+                                        )
+                                    }
+                                }
+
+                                // Option 2: AI Pure White Background
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(9.dp))
+                                        .clickable { onToggleWhiteBackground(true) },
+                                    color = if (whiteBackgroundEnabled) Color.White else Color.Transparent,
+                                    shape = RoundedCornerShape(9.dp),
+                                    border = if (whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.5.dp, EmeraldSuccess) else null
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(vertical = 9.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "🪄 Pure White (AI)",
+                                            fontSize = 11.sp,
+                                            fontWeight = if (whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (whiteBackgroundEnabled) EmeraldSuccess else SlateTextSecondary
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

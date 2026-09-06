@@ -41,6 +41,9 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
     private val _whiteBackgroundEnabled = MutableStateFlow<Boolean>(PresetRepository.defaultPreset.requiresWhiteBackground)
     val whiteBackgroundEnabled: StateFlow<Boolean> = _whiteBackgroundEnabled.asStateFlow()
 
+    private val _passportSizeEnabled = MutableStateFlow<Boolean>(PresetRepository.defaultPreset.isPassportSize)
+    val passportSizeEnabled: StateFlow<Boolean> = _passportSizeEnabled.asStateFlow()
+
     private val _lastSavedUri = MutableStateFlow<Uri?>(null)
     val lastSavedUri: StateFlow<Uri?> = _lastSavedUri.asStateFlow()
 
@@ -57,10 +60,15 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
     fun selectPreset(preset: PhotoPreset) {
         _selectedPreset.value = preset
         _whiteBackgroundEnabled.value = preset.requiresWhiteBackground
+        _passportSizeEnabled.value = preset.isPassportSize
     }
 
     fun setWhiteBackgroundEnabled(enabled: Boolean) {
         _whiteBackgroundEnabled.value = enabled
+    }
+
+    fun setPassportSizeEnabled(enabled: Boolean) {
+        _passportSizeEnabled.value = enabled
     }
 
     /**
@@ -84,7 +92,7 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
 
     /**
      * Central coroutine pipeline running on Dispatchers.Default / IO:
-     * Decode -> Face Detect & Passport Crop -> Background Segmentation (if enabled) -> Exact KB Compression
+     * Decode -> Framing / Face Detection -> Background Segmentation (if enabled) -> Exact KB Compression
      */
     private suspend fun processPipeline(
         sourceUri: Uri?,
@@ -103,31 +111,47 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
                 }
                 rawInputBitmap = baseBitmap
 
-                // Step 2: Face Detection & Passport Frame Centering
-                _processingPhase.value = ProcessingPhase.DetectingFace("Centering frame & aligning face…")
-                val detectionResult = faceDetector.processAndCrop(baseBitmap, preset.aspectRatio)
+                // Step 2: Framing & Alignment (Bypass face detection for signatures; allow original framing)
+                val detectionResult = when {
+                    preset.isSignature -> {
+                        _processingPhase.value = ProcessingPhase.DetectingFace("Aligning signature frame…")
+                        faceDetector.cropDocumentOrSignature(baseBitmap, preset.aspectRatio)
+                    }
+                    _passportSizeEnabled.value -> {
+                        _processingPhase.value = ProcessingPhase.DetectingFace("Centering frame & aligning face…")
+                        faceDetector.processAndCrop(baseBitmap, preset.aspectRatio)
+                    }
+                    else -> {
+                        _processingPhase.value = ProcessingPhase.DetectingFace("Preserving original photo framing…")
+                        faceDetector.cropWithOriginalFraming(baseBitmap)
+                    }
+                }
                 originalCroppedBitmap = detectionResult.croppedBitmap
 
-                // Step 3: Background Removal & Pure White Replacement (conditional on user toggle / preset)
-                val applyWhite = _whiteBackgroundEnabled.value
+                // Step 3: Background Removal & Pure White Replacement (Bypassed for signatures)
+                val applyWhite = !preset.isSignature && _whiteBackgroundEnabled.value
                 val activeBitmap = if (applyWhite) {
                     _processingPhase.value = ProcessingPhase.RemovingBackground("Applying clean white background…")
                     val segResult = backgroundRemover.removeAndReplaceBackgroundWithWhite(detectionResult.croppedBitmap)
                     whiteSegmentedBitmap = segResult.outputBitmap
                     segResult.outputBitmap
                 } else {
-                    _processingPhase.value = ProcessingPhase.RemovingBackground("Preserving original background…")
+                    _processingPhase.value = ProcessingPhase.RemovingBackground(
+                        if (preset.isSignature) "Preserving high-contrast signature paper…" else "Preserving original background…"
+                    )
                     whiteSegmentedBitmap = null
                     detectionResult.croppedBitmap
                 }
 
                 // Step 4: Intelligent Exact KB Compression
                 _processingPhase.value = ProcessingPhase.Compressing("Compressing strictly under ${preset.targetMaxKb} KB…")
+                val targetW = if (_passportSizeEnabled.value || preset.isSignature) preset.widthPx else activeBitmap.width
+                val targetH = if (_passportSizeEnabled.value || preset.isSignature) preset.heightPx else activeBitmap.height
                 val compressionOutput = ExactKbCompressor.compressToExactLimit(
                     sourceBitmap = activeBitmap,
                     targetMaxKb = preset.targetMaxKb,
-                    initialWidth = preset.widthPx,
-                    initialHeight = preset.heightPx
+                    initialWidth = targetW,
+                    initialHeight = targetH
                 )
 
                 // Step 5: Success Output Assembly
@@ -159,6 +183,7 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
      */
     fun toggleBackgroundOnCurrentResult() {
         val currentSuccess = (_processingPhase.value as? ProcessingPhase.Success)?.result ?: return
+        if (currentSuccess.preset.isSignature) return // Signatures always preserve paper background
         val original = originalCroppedBitmap ?: currentSuccess.originalBitmap ?: return
         val newWhiteState = !_whiteBackgroundEnabled.value
         _whiteBackgroundEnabled.value = newWhiteState
@@ -180,11 +205,13 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
                         original
                     }
 
+                    val targetW = if (_passportSizeEnabled.value) currentSuccess.preset.widthPx else activeBitmap.width
+                    val targetH = if (_passportSizeEnabled.value) currentSuccess.preset.heightPx else activeBitmap.height
                     val compressionOutput = ExactKbCompressor.compressToExactLimit(
                         sourceBitmap = activeBitmap,
                         targetMaxKb = currentSuccess.targetMaxKb,
-                        initialWidth = currentSuccess.preset.widthPx,
-                        initialHeight = currentSuccess.preset.heightPx
+                        initialWidth = targetW,
+                        initialHeight = targetH
                     )
 
                     val updatedResult = currentSuccess.copy(
@@ -194,6 +221,71 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
                         finalSizeBytes = compressionOutput.exactSizeBytes,
                         width = compressionOutput.finalWidth,
                         height = compressionOutput.finalHeight
+                    )
+
+                    _processingPhase.value = ProcessingPhase.Success(updatedResult)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    _processingPhase.value = ProcessingPhase.Success(currentSuccess)
+                }
+            }
+        }
+    }
+
+    /**
+     * Swaps between 3.5×4.5 cm Passport Size and Original Photo Framing live on Result Preview screen.
+     */
+    fun toggleFramingOnCurrentResult() {
+        val currentSuccess = (_processingPhase.value as? ProcessingPhase.Success)?.result ?: return
+        val base = rawInputBitmap ?: return
+        if (currentSuccess.preset.isSignature) return // Signatures do not use passport framing
+
+        val newPassportState = !_passportSizeEnabled.value
+        _passportSizeEnabled.value = newPassportState
+
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                try {
+                    _processingPhase.value = ProcessingPhase.Compressing(
+                        if (newPassportState) "Applying 3.5×4.5 cm passport framing…" else "Restoring original photo framing…"
+                    )
+
+                    val detectionResult = if (newPassportState) {
+                        faceDetector.processAndCrop(base, currentSuccess.preset.aspectRatio)
+                    } else {
+                        faceDetector.cropWithOriginalFraming(base)
+                    }
+                    originalCroppedBitmap = detectionResult.croppedBitmap
+
+                    // Re-segment if white background was active
+                    val applyWhite = _whiteBackgroundEnabled.value
+                    val activeBitmap = if (applyWhite) {
+                        val seg = backgroundRemover.removeAndReplaceBackgroundWithWhite(detectionResult.croppedBitmap)
+                        whiteSegmentedBitmap = seg.outputBitmap
+                        seg.outputBitmap
+                    } else {
+                        whiteSegmentedBitmap = null
+                        detectionResult.croppedBitmap
+                    }
+
+                    val targetW = if (newPassportState) currentSuccess.preset.widthPx else activeBitmap.width
+                    val targetH = if (newPassportState) currentSuccess.preset.heightPx else activeBitmap.height
+                    val compressionOutput = ExactKbCompressor.compressToExactLimit(
+                        sourceBitmap = activeBitmap,
+                        targetMaxKb = currentSuccess.targetMaxKb,
+                        initialWidth = targetW,
+                        initialHeight = targetH
+                    )
+
+                    val updatedResult = currentSuccess.copy(
+                        originalBitmap = detectionResult.croppedBitmap,
+                        segmentedBitmap = activeBitmap,
+                        finalBitmap = compressionOutput.finalBitmap,
+                        finalBytes = compressionOutput.byteArray,
+                        finalSizeBytes = compressionOutput.exactSizeBytes,
+                        width = compressionOutput.finalWidth,
+                        height = compressionOutput.finalHeight,
+                        qualityReport = detectionResult.qualityReport
                     )
 
                     _processingPhase.value = ProcessingPhase.Success(updatedResult)

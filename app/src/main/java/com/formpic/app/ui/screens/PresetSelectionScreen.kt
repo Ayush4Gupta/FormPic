@@ -397,38 +397,59 @@ private fun PresetCard(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // White Background status pill
+                    // Framing Status Pill
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(4.dp))
                             .background(
                                 when {
-                                    preset.isWhiteBackgroundMandatory -> Color(0xFFDCFCE7)
-                                    preset.id.contains("signature") -> Color(0xFFEFF6FF)
-                                    else -> Color(0xFFF1F5F9)
+                                    preset.isSignature -> Color(0xFFF1F5F9)
+                                    preset.isPassportSize && preset.isPassportSizeMandatory -> Color(0xFFEFF6FF)
+                                    preset.isPassportSize -> Color(0xFFF1F5F9)
+                                    else -> Color(0xFFF8FAFC)
                                 }
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = when {
-                                preset.isWhiteBackgroundMandatory -> "🛡️ White BG Mandatory"
-                                preset.id.contains("signature") -> "✒️ Signature / Ink Only"
-                                else -> "⚪ White BG Optional"
+                                preset.isSignature -> "✒️ Signature Ratio"
+                                preset.isPassportSize && preset.isPassportSizeMandatory -> "📐 3.5×4.5 cm Mandated"
+                                preset.isPassportSize -> "📐 3.5×4.5 cm Passport"
+                                preset.isSquareAspect -> "🔲 1:1 Square"
+                                else -> "🖼️ Flexible Framing"
                             },
                             color = when {
-                                preset.isWhiteBackgroundMandatory -> Color(0xFF166534)
-                                preset.id.contains("signature") -> Color(0xFF1E40AF)
-                                else -> SlateTextSecondary
+                                preset.isPassportSize && preset.isPassportSizeMandatory -> Color(0xFF1D4ED8)
+                                else -> NavyDeep
                             },
                             fontSize = 10.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                     }
 
+                    // Background status pill
+                    if (!preset.isSignature) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(
+                                    if (preset.isWhiteBackgroundMandatory) Color(0xFFDCFCE7) else Color(0xFFF1F5F9)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = if (preset.isWhiteBackgroundMandatory) "🛡️ White BG Mandated" else "⚪ White BG Optional",
+                                color = if (preset.isWhiteBackgroundMandatory) Color(0xFF166534) else SlateTextSecondary,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+
                     if (preset.officialSource.isNotEmpty()) {
                         Text(
-                            text = "• ${preset.officialSource.take(28)}…",
+                            text = "• ${preset.officialSource.take(24)}…",
                             fontSize = 10.sp,
                             color = Color(0xFF059669),
                             fontWeight = FontWeight.Medium
