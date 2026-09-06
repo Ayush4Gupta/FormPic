@@ -1,9 +1,12 @@
-name: Build FormPic Release AAB
+name: Build FormPic Release Artifacts (AAB & APK)
 
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -50,8 +53,8 @@ jobs:
       - name: Build Core Tests
         run: ./gradlew :core:test --stacktrace
 
-      - name: Build Release Android App Bundle (.aab)
-        run: ./gradlew :app:bundleRelease --stacktrace
+      - name: Build Release Bundle (.aab) & APK (.apk)
+        run: ./gradlew :app:bundleRelease :app:assembleRelease --stacktrace
 
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
@@ -59,6 +62,41 @@ jobs:
           name: formpic-release-aab
           path: app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: formpic-release-apk
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "FormPic v1.0.0 — Official Production Release"
+          body: |
+            ## FormPic v1.0.0 — Direct Android APK & AAB Release
+            
+            FormPic is a privacy-first, on-device photo resizer and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
+            
+            ### 📥 Download & Install on Android:
+            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.0/app-release.apk)
+            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.0/app-release.aab)
+            
+            ### Key Features:
+            - 🎯 **Exact KB Targets**: Under 25 KB, Under 50 KB, Under 75 KB, Under 100 KB, Custom KB.
+            - 🇮🇳 **Official Indian Government Presets**: Passport Seva (MEA), SSC, UPSC, IBPS, NEET, RRB.
+            - 🔒 **100% On-Device AI**: Zero cloud uploads; your photos never leave your device.
+            - 📷 **CameraX Passport Guide**: Oval guide with eye-level and head height framing.
+            - ✂️ **AI White Background Isolation**: Instant clean white background replacement.
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Build Reports (on failure)
         if: failure()
