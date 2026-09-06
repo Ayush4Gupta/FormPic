@@ -35,6 +35,9 @@ data class PhotoPreset(
     val aspectRatio: Float
         get() = if (heightPx > 0) widthPx.toFloat() / heightPx.toFloat() else 35f / 45f
 
+    val isSquareAspect: Boolean
+        get() = kotlin.math.abs(aspectRatio - 1.0f) < 0.05f
+
     val displayDimensionString: String
         get() = when {
             widthMm > 0 && heightMm > 0 -> "%.0f × %.0f mm (%d × %d px)".format(widthMm, heightMm, widthPx, heightPx)

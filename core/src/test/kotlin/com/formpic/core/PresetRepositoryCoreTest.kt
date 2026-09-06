@@ -71,6 +71,7 @@ class PresetRepositoryCoreTest {
         val upsc = PresetRepository.officialExamPresets.find { it.id == "official_upsc" }
         assertNotNull(upsc)
         assertEquals(1.0f, upsc!!.aspectRatio, 0.01f)
+        assertTrue(upsc.isSquareAspect)
         assertTrue(upsc.targetMaxKb <= 300)
         assertTrue(upsc.requiresWhiteBackground)
         assertEquals(false, upsc.isPassportSize)
