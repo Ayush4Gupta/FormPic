@@ -20,22 +20,30 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Configure Keystore
-        if: ${{ env.KEYSTORE_BASE64 != '' }}
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > formpic-release.jks
-          cat <<EOF > keystore.properties
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using production release keystore from repository secret"
+            echo "$KEYSTORE_BASE64" | base64 --decode > formpic-release.jks
+            cat <<EOF > keystore.properties
           storeFile=formpic-release.jks
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
           keyAlias=formpic-key
           keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
           EOF
+          else
+            echo "Generating release keystore for CI release packaging"
+            keytool -genkeypair -v -keystore formpic-release.jks -alias formpic-key -keyalg RSA -keysize 2048 -validity 10000 -storepass ayushgupta -keypass ayushgupta -dname "CN=Ayush Gupta, OU=Development, O=FormPic, L=Chandigarh, ST=Chandigarh, C=IN"
+            cat <<EOF > keystore.properties
+          storeFile=formpic-release.jks
+          storePassword=ayushgupta
+          keyAlias=formpic-key
+          keyPassword=ayushgupta
+          EOF
+          fi
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
@@ -51,3 +59,12 @@ jobs:
           name: formpic-release-aab
           path: app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
+
+      - name: Upload Build Reports (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-failure-reports
+          path: |
+            **/build/reports/
+            **/build/outputs/logs/
