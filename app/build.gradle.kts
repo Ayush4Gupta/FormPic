@@ -119,6 +119,7 @@ dependencies {
 
     // On-Device ML Kit (Offline, 100% Private, Zero cloud upload)
     implementation(libs.google.mlkit.vision.common)
+    implementation(libs.google.mlkit.vision.interfaces)
     implementation(libs.google.mlkit.face.detection)
     implementation(libs.google.mlkit.segmentation.selfie)
 
