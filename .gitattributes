@@ -1,0 +1,16 @@
+# Force LF for shell scripts so Linux CI runners never fail with CRLF
+gradlew text eol=lf
+*.sh text eol=lf
+
+# Force CRLF for Windows batch files
+gradlew.bat text eol=crlf
+*.bat text eol=crlf
+
+# Binary files
+*.jar binary
+*.jks binary
+*.aab binary
+*.apk binary
+*.png binary
+*.jpg binary
+*.webp binary
