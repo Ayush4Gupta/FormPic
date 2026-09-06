@@ -12,8 +12,3 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 }
 
-tasks.test {
-    if (!file("C:/Users/ritik/Downloads/pp.ritik.jpg").exists()) {
-        exclude("**/RealImageCompressionTest*")
-    }
-}
