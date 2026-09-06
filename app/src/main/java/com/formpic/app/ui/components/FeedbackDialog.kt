@@ -200,10 +200,16 @@ fun FeedbackDialog(
                     unfocusedLabelColor = SlateTextSecondary
                 )
 
+                val inputTextStyle = androidx.compose.ui.text.TextStyle(
+                    color = SlateTextPrimary,
+                    fontSize = 14.sp
+                )
+
                 // Message Text Field
                 OutlinedTextField(
                     value = messageText,
                     onValueChange = { if (it.length <= 600) messageText = it },
+                    textStyle = inputTextStyle,
                     label = { Text("Your Message / Specifications") },
                     placeholder = {
                         Text(
@@ -242,6 +248,7 @@ fun FeedbackDialog(
                 OutlinedTextField(
                     value = contactEmail,
                     onValueChange = { contactEmail = it },
+                    textStyle = inputTextStyle,
                     label = { Text(stringResource(R.string.feedback_email_hint)) },
                     placeholder = { Text("example@gmail.com", color = Color(0xFF94A3B8), fontSize = 13.sp) },
                     modifier = Modifier.fillMaxWidth(),

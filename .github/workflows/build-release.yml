@@ -55,15 +55,27 @@ jobs:
 
       - name: Build Release Bundle (.aab) & APK (.apk)
         run: |
+          set -e
+          set -o pipefail
           ./gradlew :app:bundleRelease :app:assembleRelease --stacktrace 2>&1 | tee build.log
 
-      - name: Report Build Log on Failure
-        if: failure()
+      - name: Report Build Log
+        if: always()
         run: |
-          echo "## ❌ Gradle Build Failure Details" >> $GITHUB_STEP_SUMMARY
-          echo '```text' >> $GITHUB_STEP_SUMMARY
-          tail -n 120 build.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ -f build.log ]; then
+            echo "## 📋 Gradle Release Build Log (Tail)" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            tail -n 250 build.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Build Log Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-log
+          path: build.log
+          if-no-files-found: ignore
 
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
