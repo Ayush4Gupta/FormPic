@@ -73,23 +73,23 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.4
-          name: "FormPic v1.0.4 — Official Production Release"
+          tag_name: v1.0.5
+          name: "FormPic v1.0.5 — Official Production Release"
           body: |
-            ## FormPic v1.0.4 — Direct Android APK & AAB Release
+            ## FormPic v1.0.5 — Direct Android APK & AAB Release
             
             FormPic is a privacy-first, on-device photo resizer, signature processor, and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
             
             ### 📥 Download & Install on Android:
-            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.4/app-release.apk)
-            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.4/app-release.aab)
+            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.5/app-release.apk)
+            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.5/app-release.aab)
             
-            ### What's New in v1.0.4:
-            - ✒️ **Fixed Signature Processing (No False Eye Checks)**: Dedicated signature pipeline that completely bypasses ML Kit face detection and eye-openness checks. Signature cursive handwriting is no longer mistaken for facial loops, and shows verified green badge: *Signature Approved for Official Uploads*.
-            - 📐 **Optional Passport Size (3.5 × 4.5 cm) Framing**: Quick KB targets (25, 50, 75, 100 KB) and Custom sizes can now toggle between Passport Size framing and Original Photo Aspect Ratio. Official exam presets enforce portal-mandated framing by default.
+            ### What's New in v1.0.5:
+            - 💬 **In-App Feedback & Exam Preset Request System**: Added a native dialog accessible from Settings and Help & FAQ. Candidates can request new exam presets (State PSCs, Police, Universities), report portal issues, or suggest features with 1-tap email submission and clipboard copy fallback.
+            - ✒️ **Fixed Signature Processing (No False Eye Checks)**: Dedicated signature pipeline that completely bypasses ML Kit face detection and eye-openness checks. Signature handwriting is never mistaken for eyes, with verified green approval badge.
+            - 📐 **Passport Size (3.5 × 4.5 cm) Framing Toggle**: Quick KB targets (25, 50, 75, 100 KB) and Custom sizes can toggle between Passport Size framing and Original Photo Aspect Ratio. Official exam presets enforce portal-mandated framing by default.
             - ⚡ **Dual 1-Tap Live Swappers (< 200 ms)**: Instantly swap between Passport Size ⇄ Original Framing and Pure White ⇄ Original Background directly on the Result Preview screen without re-uploading!
             - 🎛️ **Dual-Command Center on Home Screen**: Intuitive switchers for Framing Mode and Background Mode with clear Portal-Mandated status indicators.
-            - 🏷️ **Comprehensive Preset Badges**: Preset selection screen clearly indicates both Framing rules (3.5×4.5 cm, Square, Signature Ratio) and Background requirements.
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab

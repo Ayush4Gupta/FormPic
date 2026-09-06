@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +34,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.formpic.app.R
 import com.formpic.app.engine.StorageManager
+import com.formpic.app.ui.components.FeedbackDialog
 import com.formpic.app.ui.components.FormPicTopAppBar
 import com.formpic.app.ui.theme.NavyDeep
 import com.formpic.app.ui.theme.SlateBorder
@@ -57,6 +63,11 @@ fun SettingsScreen(
     onNavigateToHelp: () -> Unit
 ) {
     val context = LocalContext.current
+    var showFeedbackDialog by remember { mutableStateOf(false) }
+
+    if (showFeedbackDialog) {
+        FeedbackDialog(onDismiss = { showFeedbackDialog = false })
+    }
 
     Scaffold(
         topBar = {
@@ -100,6 +111,13 @@ fun SettingsScreen(
 
             // Support & Information
             SettingsSectionHeader(title = "SUPPORT & LEGAL")
+
+            SettingsItemCard(
+                icon = Icons.Default.RateReview,
+                title = stringResource(R.string.pref_feedback_title),
+                subtitle = stringResource(R.string.pref_feedback_desc),
+                onClick = { showFeedbackDialog = true }
+            )
 
             SettingsItemCard(
                 icon = Icons.Default.HelpOutline,

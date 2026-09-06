@@ -16,6 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,9 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.formpic.app.R
+import com.formpic.app.ui.components.FeedbackDialog
 import com.formpic.app.ui.components.FormPicTopAppBar
 import com.formpic.app.ui.theme.NavyDeep
 import com.formpic.app.ui.theme.SlateBorder
@@ -44,6 +49,12 @@ data class FaqItem(val questionRes: Int, val answerRes: Int)
 
 @Composable
 fun HelpFaqScreen(onNavigateBack: () -> Unit) {
+    var showFeedbackDialog by remember { mutableStateOf(false) }
+
+    if (showFeedbackDialog) {
+        FeedbackDialog(onDismiss = { showFeedbackDialog = false })
+    }
+
     val faqList = remember {
         listOf(
             FaqItem(R.string.faq_q1, R.string.faq_a1),
@@ -74,6 +85,55 @@ fun HelpFaqScreen(onNavigateBack: () -> Unit) {
         ) {
             items(faqList.size) { index ->
                 FaqCard(faqItem = faqList[index])
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(6.dp))
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
+                    shape = RoundedCornerShape(16.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFBFDBFE))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Can't find your exam or need help?",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = NavyDeep
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Request official specifications for State PSCs, Police, or Universities directly from our team.",
+                            fontSize = 12.sp,
+                            color = SlateTextSecondary,
+                            textAlign = TextAlign.Center,
+                            lineHeight = 16.sp
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = { showFeedbackDialog = true },
+                            colors = ButtonDefaults.buttonColors(containerColor = NavyDeep),
+                            shape = RoundedCornerShape(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Mail,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Send Feedback / Request Preset",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
