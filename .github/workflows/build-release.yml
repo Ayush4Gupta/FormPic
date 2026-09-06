@@ -27,10 +27,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Core Tests
-        run: ./gradlew :core:test
+        run: ./gradlew :core:test --stacktrace
 
       - name: Build Release Android App Bundle (.aab)
-        run: ./gradlew :app:bundleRelease
+        run: ./gradlew :app:bundleRelease --stacktrace
 
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
