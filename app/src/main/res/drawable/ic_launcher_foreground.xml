@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:scaleX="0.85"
+        android:scaleY="0.85">
+        <!-- White document / photo card with rounded corners -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M32,22 h44 a6,6 0 0 1 6,6 v52 a6,6 0 0 1 -6,6 h-44 a6,6 0 0 1 -6,-6 v-52 a6,6 0 0 1 6,-6 z" />
+
+        <!-- Blue photo frame boundary -->
+        <path
+            android:strokeColor="#0066CC"
+            android:strokeWidth="2.5"
+            android:fillColor="#F0F6FC"
+            android:pathData="M37,28 h34 a3,3 0 0 1 3,3 v38 a3,3 0 0 1 -3,3 h-34 a3,3 0 0 1 -3,-3 v-38 a3,3 0 0 1 3,-3 z" />
+
+        <!-- Passport Head Silhouette -->
+        <path
+            android:fillColor="#0A2540"
+            android:pathData="M54,36 a7,7 0 1 0 0,14 a7,7 0 0 0 0,-14 z" />
+
+        <!-- Passport Shoulders Silhouette -->
+        <path
+            android:fillColor="#0A2540"
+            android:pathData="M43,62 c0,-6.5 5,-10 11,-10 s11,3.5 11,10 v4 h-22 z" />
+
+        <!-- Document bottom form lines -->
+        <path
+            android:strokeColor="#CBD5E1"
+            android:strokeWidth="2.5"
+            android:strokeLineCap="round"
+            android:pathData="M36,75 h20 M36,80 h12" />
+
+        <!-- Verified Emerald Target Check Badge -->
+        <path
+            android:fillColor="#10B981"
+            android:pathData="M72,74 a9,9 0 1 0 0,18 a9,9 0 0 0 0,-18 z" />
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round"
+            android:pathData="M68,83 l2.5,2.5 l5.5,-5.5" />
+    </group>
+</vector>

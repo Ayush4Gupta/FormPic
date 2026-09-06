@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FormPic Brand Palette: Trustworthy Indian Navy, Crisp White, Emerald Success -->
+    <color name="primary_navy">#0A2540</color>
+    <color name="primary_blue">#0066CC</color>
+    <color name="primary_blue_light">#E6F0FA</color>
+    <color name="accent_teal">#00A884</color>
+    <color name="success_emerald">#10B981</color>
+    <color name="success_emerald_bg">#E6F8F2</color>
+    <color name="warning_amber">#F59E0B</color>
+    <color name="warning_amber_bg">#FEF3C7</color>
+    <color name="error_rose">#EF4444</color>
+    <color name="neutral_slate">#64748B</color>
+    <color name="neutral_light_bg">#F8FAFC</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#475569</color>
+    <color name="border_subtle">#E2E8F0</color>
+</resources>
