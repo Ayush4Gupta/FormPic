@@ -28,8 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -152,7 +152,7 @@ fun FeedbackDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    FeedbackCategory.entries.forEach { category ->
+                    FeedbackCategory.values().forEach { category ->
                         val isSelected = selectedCategory == category
                         Surface(
                             modifier = Modifier
@@ -323,7 +323,7 @@ fun FeedbackDialog(
                     colors = ButtonDefaults.buttonColors(containerColor = NavyDeep)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Mail,
+                        imageVector = Icons.Default.Email,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -355,7 +355,7 @@ fun FeedbackDialog(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = SlateTextSecondary)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ContentCopy,
+                        imageVector = Icons.Default.Share,
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )

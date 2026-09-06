@@ -131,16 +131,16 @@
     <!-- In-App Feedback System -->
     <string name="feedback_dialog_title">Send Feedback</string>
     <string name="feedback_dialog_subtitle">Help us improve FormPic or request an official exam preset</string>
-    <string name="feedback_category_exam_preset">📑 Request Exam</string>
-    <string name="feedback_category_portal_issue">🐞 Report Issue</string>
-    <string name="feedback_category_feature">💡 Suggest Feature</string>
-    <string name="feedback_category_general">⭐ General</string>
+    <string name="feedback_category_exam_preset">Request Exam</string>
+    <string name="feedback_category_portal_issue">Report Issue</string>
+    <string name="feedback_category_feature">Suggest Feature</string>
+    <string name="feedback_category_general">General</string>
     <string name="feedback_message_hint">Describe your feedback, issue, or the exam portal specifications (e.g. SSC, State PSC, KB limit)...</string>
     <string name="feedback_email_hint">Your Email (Optional, for developer reply)</string>
     <string name="feedback_send_button">Send via Email</string>
     <string name="feedback_copy_button">Copy Text</string>
     <string name="feedback_copied_msg">Feedback details copied to clipboard!</string>
-    <string name="feedback_email_intent_chooser">Send feedback via…</string>
+    <string name="feedback_email_intent_chooser">Send feedback via...</string>
     <string name="pref_feedback_title">Send Feedback &amp; Presets</string>
     <string name="pref_feedback_desc">Request an exam preset, report portal issues, or suggest features</string>
 </resources>

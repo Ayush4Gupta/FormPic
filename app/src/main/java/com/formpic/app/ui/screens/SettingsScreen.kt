@@ -22,11 +22,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
-import androidx.compose.material.icons.filled.RateReview
 import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -113,7 +113,7 @@ fun SettingsScreen(
             SettingsSectionHeader(title = "SUPPORT & LEGAL")
 
             SettingsItemCard(
-                icon = Icons.Default.RateReview,
+                icon = Icons.Default.Email,
                 title = stringResource(R.string.pref_feedback_title),
                 subtitle = stringResource(R.string.pref_feedback_desc),
                 onClick = { showFeedbackDialog = true }
