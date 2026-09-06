@@ -109,13 +109,16 @@ dependencies {
     // Image loading
     implementation(libs.coil.compose)
 
-    // CameraX
+    // CameraX & Future utilities
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+    implementation(libs.guava)
+    implementation(libs.androidx.concurrent.futures.ktx)
 
     // On-Device ML Kit (Offline, 100% Private, Zero cloud upload)
+    implementation(libs.google.mlkit.vision.common)
     implementation(libs.google.mlkit.face.detection)
     implementation(libs.google.mlkit.segmentation.selfie)
 

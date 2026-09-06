@@ -16,7 +16,7 @@ import kotlin.coroutines.resume
 class BackgroundRemoverEngine {
 
     private val segmenterOptions = SelfieSegmenterOptions.Builder()
-        .setDeliveryMode(SelfieSegmenterOptions.SINGLE_IMAGE_MODE)
+        .setDetectorMode(SelfieSegmenterOptions.SINGLE_IMAGE_MODE)
         .build()
 
     private val segmenter = Segmentation.getClient(segmenterOptions)
