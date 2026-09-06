@@ -62,7 +62,9 @@ import com.formpic.app.ui.theme.SlateTextSecondary
 @Composable
 fun HomeScreen(
     selectedPreset: PhotoPreset,
+    whiteBackgroundEnabled: Boolean,
     onPresetSelected: (PhotoPreset) -> Unit,
+    onToggleWhiteBackground: (Boolean) -> Unit,
     onNavigateToCamera: () -> Unit,
     onPhotoSelected: (Uri, PhotoPreset) -> Unit,
     onNavigateToPresets: (tabIndex: Int) -> Unit,
@@ -233,8 +235,8 @@ fun HomeScreen(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "Pure White",
-                                    color = EmeraldSuccess,
+                                    text = if (whiteBackgroundEnabled) "Pure White" else "Original BG",
+                                    color = if (whiteBackgroundEnabled) EmeraldSuccess else Color(0xFF93C5FD),
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -244,7 +246,125 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // Background Mode Switcher (Optional for Quick KB, Portal-mandated for Official Exams)
+            if (selectedPreset.isWhiteBackgroundMandatory) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable { onToggleWhiteBackground(!whiteBackgroundEnabled) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (whiteBackgroundEnabled) Color(0xFFECFDF5) else Color(0xFFFFFBEB)
+                    ),
+                    shape = RoundedCornerShape(14.dp),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        if (whiteBackgroundEnabled) Color(0xFFA7F3D0) else Color(0xFFFDE68A)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (whiteBackgroundEnabled) "🛡️" else "⚠️",
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (whiteBackgroundEnabled) "Pure White BG: Portal Mandated" else "Original BG Selected (Exams require White)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (whiteBackgroundEnabled) Color(0xFF065F46) else Color(0xFF92400E)
+                            )
+                            Text(
+                                text = if (whiteBackgroundEnabled) "Tap to keep original background if already studio white." else "Tap to restore mandatory pure white background.",
+                                fontSize = 11.sp,
+                                color = if (whiteBackgroundEnabled) Color(0xFF047857) else Color(0xFFB45309)
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (whiteBackgroundEnabled) EmeraldSuccess else Color(0xFFD97706))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = if (whiteBackgroundEnabled) "ON ✓" else "OFF",
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            } else {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = Color(0xFFE2E8F0).copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(14.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        // Option 1: Keep Original Background
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { onToggleWhiteBackground(false) },
+                            color = if (!whiteBackgroundEnabled) Color.White else Color.Transparent,
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (!whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.dp, SlateBorder) else null
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 10.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "⚪ Keep Original BG",
+                                    fontSize = 12.sp,
+                                    fontWeight = if (!whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (!whiteBackgroundEnabled) NavyDeep else SlateTextSecondary
+                                )
+                            }
+                        }
+
+                        // Option 2: AI Pure White Background
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { onToggleWhiteBackground(true) },
+                            color = if (whiteBackgroundEnabled) Color.White else Color.Transparent,
+                            shape = RoundedCornerShape(10.dp),
+                            border = if (whiteBackgroundEnabled) androidx.compose.foundation.BorderStroke(1.5.dp, EmeraldSuccess) else null
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(vertical = 10.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "🪄 Pure White (AI)",
+                                    fontSize = 12.sp,
+                                    fontWeight = if (whiteBackgroundEnabled) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (whiteBackgroundEnabled) EmeraldSuccess else SlateTextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Primary Action Buttons
             Button(

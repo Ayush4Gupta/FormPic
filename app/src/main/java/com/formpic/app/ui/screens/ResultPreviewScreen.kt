@@ -61,6 +61,8 @@ import com.formpic.app.ui.theme.SlateTextSecondary
 @Composable
 fun ResultPreviewScreen(
     result: ProcessingResult,
+    whiteBackgroundEnabled: Boolean,
+    onToggleWhiteBackground: () -> Unit,
     onDownloadClick: (Activity) -> Unit,
     onShareClick: () -> Unit,
     onCreateAnotherClick: () -> Unit,
@@ -129,7 +131,60 @@ fun ResultPreviewScreen(
                 aspectRatio = result.preset.aspectRatio
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(14.dp))
+
+            // 1-Tap Live Background Swapper (< 200 ms switch)
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable { onToggleWhiteBackground() },
+                color = if (whiteBackgroundEnabled) Color(0xFFECFDF5) else Color(0xFFF1F5F9),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    if (whiteBackgroundEnabled) Color(0xFFA7F3D0) else SlateBorder
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (whiteBackgroundEnabled) "🪄" else "⚪",
+                        fontSize = 18.sp
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = if (whiteBackgroundEnabled) "Background: Pure White (AI)" else "Background: Original Preserved",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (whiteBackgroundEnabled) Color(0xFF065F46) else NavyDeep
+                        )
+                        Text(
+                            text = if (whiteBackgroundEnabled) "Tap to switch to Original Background" else "Tap to apply Pure White Background (AI)",
+                            fontSize = 11.sp,
+                            color = if (whiteBackgroundEnabled) Color(0xFF047857) else SlateTextSecondary
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(if (whiteBackgroundEnabled) EmeraldSuccess else NavyDeep)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Switch ⇄",
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
 
             // Photo Metadata Card
             Card(
@@ -148,6 +203,12 @@ fun ResultPreviewScreen(
                     MetadataRow(
                         label = "Dimensions",
                         value = "${result.width} × ${result.height} px"
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    MetadataRow(
+                        label = "Background",
+                        value = if (whiteBackgroundEnabled) "Pure White (AI)" else "Original Preserved",
+                        isHighlighted = whiteBackgroundEnabled
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     MetadataRow(

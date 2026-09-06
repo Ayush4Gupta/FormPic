@@ -197,7 +197,40 @@ fun PresetSelectionScreen(
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        item {
+                            Text(
+                                text = "Official Exam Photo Presets",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = NavyDeep
+                            )
+                        }
+
                         items(PresetRepository.officialExamPresets) { preset ->
+                            PresetCard(
+                                preset = preset,
+                                isSelected = selectedPreset.id == preset.id,
+                                onClick = { selectedPreset = preset }
+                            )
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "Official Signature Presets (White Paper / Ink)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = NavyDeep
+                            )
+                            Text(
+                                text = "Pure white background removal is bypassed to preserve clean, dark ink strokes.",
+                                fontSize = 12.sp,
+                                color = SlateTextSecondary,
+                                modifier = Modifier.padding(top = 2.dp, bottom = 4.dp)
+                            )
+                        }
+
+                        items(PresetRepository.officialSignaturePresets) { preset ->
                             PresetCard(
                                 preset = preset,
                                 isSelected = selectedPreset.id == preset.id,
@@ -250,6 +283,11 @@ fun PresetSelectionScreen(
                                     focusedSupportingTextColor = SlateTextSecondary,
                                     unfocusedSupportingTextColor = SlateTextSecondary
                                 )
+                                val inputTextStyle = androidx.compose.ui.text.TextStyle(
+                                    color = SlateTextPrimary,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
 
                                 OutlinedTextField(
                                     value = customKbText,
@@ -257,6 +295,7 @@ fun PresetSelectionScreen(
                                     label = { Text("Target Maximum File Size (KB)") },
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     modifier = Modifier.fillMaxWidth(),
+                                    textStyle = inputTextStyle,
                                     supportingText = { Text("Guaranteed strict <= target limit") },
                                     colors = textFieldColors
                                 )
@@ -272,6 +311,7 @@ fun PresetSelectionScreen(
                                         onValueChange = { customWidthText = it.filter { ch -> ch.isDigit() } },
                                         label = { Text("Width (px)") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        textStyle = inputTextStyle,
                                         modifier = Modifier.weight(1f),
                                         colors = textFieldColors
                                     )
@@ -280,6 +320,7 @@ fun PresetSelectionScreen(
                                         onValueChange = { customHeightText = it.filter { ch -> ch.isDigit() } },
                                         label = { Text("Height (px)") },
                                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                        textStyle = inputTextStyle,
                                         modifier = Modifier.weight(1f),
                                         colors = textFieldColors
                                     )
@@ -317,14 +358,16 @@ private fun PresetCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
                     Text(
                         text = preset.title,
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = SlateTextPrimary
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
@@ -348,14 +391,49 @@ private fun PresetCard(
                     color = SlateTextSecondary
                 )
 
-                if (preset.officialSource.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Source: ${preset.officialSource}",
-                        fontSize = 11.sp,
-                        color = Color(0xFF00A884),
-                        fontWeight = FontWeight.Medium
-                    )
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // White Background status pill
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(
+                                when {
+                                    preset.isWhiteBackgroundMandatory -> Color(0xFFDCFCE7)
+                                    preset.id.contains("signature") -> Color(0xFFEFF6FF)
+                                    else -> Color(0xFFF1F5F9)
+                                }
+                            )
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = when {
+                                preset.isWhiteBackgroundMandatory -> "🛡️ White BG Mandatory"
+                                preset.id.contains("signature") -> "✒️ Signature / Ink Only"
+                                else -> "⚪ White BG Optional"
+                            },
+                            color = when {
+                                preset.isWhiteBackgroundMandatory -> Color(0xFF166534)
+                                preset.id.contains("signature") -> Color(0xFF1E40AF)
+                                else -> SlateTextSecondary
+                            },
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    if (preset.officialSource.isNotEmpty()) {
+                        Text(
+                            text = "• ${preset.officialSource.take(28)}…",
+                            fontSize = 10.sp,
+                            color = Color(0xFF059669),
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
 

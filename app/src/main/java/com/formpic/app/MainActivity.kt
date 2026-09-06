@@ -69,6 +69,7 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
     val navController = rememberNavController()
     val processingPhase by viewModel.processingPhase.collectAsState()
     val selectedPreset by viewModel.selectedPreset.collectAsState()
+    val whiteBackgroundEnabled by viewModel.whiteBackgroundEnabled.collectAsState()
 
     // Observe processing phase changes to navigate to processing and result screens automatically
     LaunchedEffect(processingPhase) {
@@ -107,7 +108,9 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
         composable(Screen.Home.route) {
             HomeScreen(
                 selectedPreset = selectedPreset,
+                whiteBackgroundEnabled = whiteBackgroundEnabled,
                 onPresetSelected = { preset -> viewModel.selectPreset(preset) },
+                onToggleWhiteBackground = { enabled -> viewModel.setWhiteBackgroundEnabled(enabled) },
                 onNavigateToCamera = { navController.navigate(Screen.Camera.route) },
                 onPhotoSelected = { uri, preset ->
                     viewModel.startProcessingFromUri(uri, preset)
@@ -159,6 +162,8 @@ fun FormPicNavHost(viewModel: PhotoProcessViewModel) {
             if (result != null) {
                 ResultPreviewScreen(
                     result = result,
+                    whiteBackgroundEnabled = whiteBackgroundEnabled,
+                    onToggleWhiteBackground = { viewModel.toggleBackgroundOnCurrentResult() },
                     onDownloadClick = { activity ->
                         viewModel.downloadProcessedPhoto(activity) { savedUri ->
                             if (savedUri != null) {

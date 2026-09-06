@@ -26,7 +26,8 @@ data class PhotoPreset(
     val officialSource: String = "",
     val verifiedDate: String = "",
     val tips: String = "",
-    val requiresWhiteBackground: Boolean = true
+    val requiresWhiteBackground: Boolean = false,
+    val isWhiteBackgroundMandatory: Boolean = false
 ) {
     val aspectRatio: Float
         get() = if (heightPx > 0) widthPx.toFloat() / heightPx.toFloat() else 35f / 45f

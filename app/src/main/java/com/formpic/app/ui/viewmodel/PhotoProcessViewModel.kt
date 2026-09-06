@@ -38,12 +38,15 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
     private val _selectedPreset = MutableStateFlow<PhotoPreset>(PresetRepository.defaultPreset)
     val selectedPreset: StateFlow<PhotoPreset> = _selectedPreset.asStateFlow()
 
+    private val _whiteBackgroundEnabled = MutableStateFlow<Boolean>(PresetRepository.defaultPreset.requiresWhiteBackground)
+    val whiteBackgroundEnabled: StateFlow<Boolean> = _whiteBackgroundEnabled.asStateFlow()
+
     private val _lastSavedUri = MutableStateFlow<Uri?>(null)
     val lastSavedUri: StateFlow<Uri?> = _lastSavedUri.asStateFlow()
 
     private var rawInputBitmap: Bitmap? = null
-    private var croppedSubjectBitmap: Bitmap? = null
-    private var segmentedBitmap: Bitmap? = null
+    private var originalCroppedBitmap: Bitmap? = null
+    private var whiteSegmentedBitmap: Bitmap? = null
     private var currentSourceUri: Uri? = null
 
     init {
@@ -53,6 +56,11 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
 
     fun selectPreset(preset: PhotoPreset) {
         _selectedPreset.value = preset
+        _whiteBackgroundEnabled.value = preset.requiresWhiteBackground
+    }
+
+    fun setWhiteBackgroundEnabled(enabled: Boolean) {
+        _whiteBackgroundEnabled.value = enabled
     }
 
     /**
@@ -76,7 +84,7 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
 
     /**
      * Central coroutine pipeline running on Dispatchers.Default / IO:
-     * Decode -> Face Detect & Passport Crop -> Background Segmentation -> Exact KB Compression
+     * Decode -> Face Detect & Passport Crop -> Background Segmentation (if enabled) -> Exact KB Compression
      */
     private suspend fun processPipeline(
         sourceUri: Uri?,
@@ -98,21 +106,25 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
                 // Step 2: Face Detection & Passport Frame Centering
                 _processingPhase.value = ProcessingPhase.DetectingFace("Centering frame & aligning face…")
                 val detectionResult = faceDetector.processAndCrop(baseBitmap, preset.aspectRatio)
-                croppedSubjectBitmap = detectionResult.croppedBitmap
+                originalCroppedBitmap = detectionResult.croppedBitmap
 
-                // Step 3: Background Removal & Pure White Replacement
-                _processingPhase.value = ProcessingPhase.RemovingBackground("Applying clean white background…")
-                val segResult = if (preset.requiresWhiteBackground) {
-                    backgroundRemover.removeAndReplaceBackgroundWithWhite(detectionResult.croppedBitmap)
+                // Step 3: Background Removal & Pure White Replacement (conditional on user toggle / preset)
+                val applyWhite = _whiteBackgroundEnabled.value
+                val activeBitmap = if (applyWhite) {
+                    _processingPhase.value = ProcessingPhase.RemovingBackground("Applying clean white background…")
+                    val segResult = backgroundRemover.removeAndReplaceBackgroundWithWhite(detectionResult.croppedBitmap)
+                    whiteSegmentedBitmap = segResult.outputBitmap
+                    segResult.outputBitmap
                 } else {
-                    BackgroundRemoverEngine.SegmentationResult(detectionResult.croppedBitmap, detectionResult.croppedBitmap)
+                    _processingPhase.value = ProcessingPhase.RemovingBackground("Preserving original background…")
+                    whiteSegmentedBitmap = null
+                    detectionResult.croppedBitmap
                 }
-                segmentedBitmap = segResult.outputBitmap
 
                 // Step 4: Intelligent Exact KB Compression
                 _processingPhase.value = ProcessingPhase.Compressing("Compressing strictly under ${preset.targetMaxKb} KB…")
                 val compressionOutput = ExactKbCompressor.compressToExactLimit(
-                    sourceBitmap = segResult.outputBitmap,
+                    sourceBitmap = activeBitmap,
                     targetMaxKb = preset.targetMaxKb,
                     initialWidth = preset.widthPx,
                     initialHeight = preset.heightPx
@@ -122,7 +134,7 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
                 val finalResult = ProcessingResult(
                     originalUri = sourceUri,
                     originalBitmap = detectionResult.croppedBitmap,
-                    segmentedBitmap = segResult.outputBitmap,
+                    segmentedBitmap = activeBitmap,
                     finalBitmap = compressionOutput.finalBitmap,
                     finalBytes = compressionOutput.byteArray,
                     finalSizeBytes = compressionOutput.exactSizeBytes,
@@ -137,6 +149,58 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
             } catch (e: Exception) {
                 e.printStackTrace()
                 _processingPhase.value = ProcessingPhase.Failure("Processing error: ${e.localizedMessage ?: "Unexpected error"}")
+            }
+        }
+    }
+
+    /**
+     * Swaps between Original Background and Pure White Background directly on the Result Preview screen.
+     * Takes < 200 ms since face detection and cropping are already completed.
+     */
+    fun toggleBackgroundOnCurrentResult() {
+        val currentSuccess = (_processingPhase.value as? ProcessingPhase.Success)?.result ?: return
+        val original = originalCroppedBitmap ?: currentSuccess.originalBitmap ?: return
+        val newWhiteState = !_whiteBackgroundEnabled.value
+        _whiteBackgroundEnabled.value = newWhiteState
+
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                try {
+                    _processingPhase.value = ProcessingPhase.Compressing(
+                        if (newWhiteState) "Applying clean white background…" else "Restoring original background…"
+                    )
+
+                    val activeBitmap: Bitmap = if (newWhiteState) {
+                        if (whiteSegmentedBitmap == null || whiteSegmentedBitmap?.isRecycled == true) {
+                            val seg = backgroundRemover.removeAndReplaceBackgroundWithWhite(original)
+                            whiteSegmentedBitmap = seg.outputBitmap
+                        }
+                        whiteSegmentedBitmap!!
+                    } else {
+                        original
+                    }
+
+                    val compressionOutput = ExactKbCompressor.compressToExactLimit(
+                        sourceBitmap = activeBitmap,
+                        targetMaxKb = currentSuccess.targetMaxKb,
+                        initialWidth = currentSuccess.preset.widthPx,
+                        initialHeight = currentSuccess.preset.heightPx
+                    )
+
+                    val updatedResult = currentSuccess.copy(
+                        segmentedBitmap = activeBitmap,
+                        finalBitmap = compressionOutput.finalBitmap,
+                        finalBytes = compressionOutput.byteArray,
+                        finalSizeBytes = compressionOutput.exactSizeBytes,
+                        width = compressionOutput.finalWidth,
+                        height = compressionOutput.finalHeight
+                    )
+
+                    _processingPhase.value = ProcessingPhase.Success(updatedResult)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    _processingPhase.value = ProcessingPhase.Success(currentSuccess)
+                }
             }
         }
     }
@@ -179,7 +243,7 @@ class PhotoProcessViewModel(application: Application) : AndroidViewModel(applica
     override fun onCleared() {
         super.onCleared()
         rawInputBitmap?.recycle()
-        croppedSubjectBitmap?.recycle()
-        segmentedBitmap?.recycle()
+        originalCroppedBitmap?.recycle()
+        whiteSegmentedBitmap?.recycle()
     }
 }

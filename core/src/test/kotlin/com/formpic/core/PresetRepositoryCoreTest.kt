@@ -15,6 +15,8 @@ class PresetRepositoryCoreTest {
         assertEquals("quick_50kb", defaultPreset.id)
         assertEquals(50, defaultPreset.targetMaxKb)
         assertEquals(PresetCategory.QUICK_KB, defaultPreset.category)
+        assertEquals(false, defaultPreset.requiresWhiteBackground)
+        assertEquals(false, defaultPreset.isWhiteBackgroundMandatory)
     }
 
     @Test
@@ -24,6 +26,10 @@ class PresetRepositoryCoreTest {
         assertTrue(targets.contains(50))
         assertTrue(targets.contains(75))
         assertTrue(targets.contains(100))
+        PresetRepository.quickKbPresets.forEach {
+            assertEquals(false, it.requiresWhiteBackground)
+            assertEquals(false, it.isWhiteBackgroundMandatory)
+        }
     }
 
     @Test
@@ -34,6 +40,7 @@ class PresetRepositoryCoreTest {
         assertEquals(35f, passport.widthMm)
         assertEquals(45f, passport.heightMm)
         assertTrue(passport.requiresWhiteBackground)
+        assertTrue(passport.isWhiteBackgroundMandatory)
         assertTrue(passport.officialSource.contains("passportindia.gov.in"))
     }
 
@@ -44,6 +51,8 @@ class PresetRepositoryCoreTest {
         assertEquals(50, ssc!!.targetMaxKb)
         assertEquals(35f, ssc.widthMm)
         assertEquals(45f, ssc.heightMm)
+        assertTrue(ssc.requiresWhiteBackground)
+        assertTrue(ssc.isWhiteBackgroundMandatory)
     }
 
     @Test
@@ -52,6 +61,7 @@ class PresetRepositoryCoreTest {
         assertNotNull(upsc)
         assertEquals(1.0f, upsc!!.aspectRatio, 0.01f)
         assertTrue(upsc.targetMaxKb <= 300)
+        assertTrue(upsc.requiresWhiteBackground)
     }
 
     @Test
@@ -61,6 +71,33 @@ class PresetRepositoryCoreTest {
         assertEquals(50, ibps!!.targetMaxKb)
         assertEquals(200, ibps.widthPx)
         assertEquals(230, ibps.heightPx)
+        assertTrue(ibps.requiresWhiteBackground)
+    }
+
+    @Test
+    fun testOfficialSignaturePresets() {
+        val sigs = PresetRepository.officialSignaturePresets
+        assertEquals(3, sigs.size)
+
+        val sscSig = sigs.find { it.id == "official_signature_ssc" }
+        assertNotNull(sscSig)
+        assertEquals(20, sscSig!!.targetMaxKb)
+        assertEquals(false, sscSig.requiresWhiteBackground)
+
+        val ibpsSig = sigs.find { it.id == "official_signature_ibps" }
+        assertNotNull(ibpsSig)
+        assertEquals(20, ibpsSig!!.targetMaxKb)
+        assertEquals(false, ibpsSig.requiresWhiteBackground)
+
+        val upscSig = sigs.find { it.id == "official_signature_upsc" }
+        assertNotNull(upscSig)
+        assertEquals(200, upscSig!!.targetMaxKb)
+        assertEquals(false, upscSig.requiresWhiteBackground)
+
+        assertEquals(
+            PresetRepository.officialExamPresets.size + sigs.size,
+            PresetRepository.allOfficialPresets.size
+        )
     }
 
     @Test
@@ -68,9 +105,11 @@ class PresetRepositoryCoreTest {
         val customLow = PresetRepository.createCustomPreset(targetKb = 5, widthPx = 50, heightPx = 50)
         assertTrue(customLow.targetMaxKb >= 15)
         assertTrue(customLow.widthPx >= 150)
+        assertEquals(false, customLow.requiresWhiteBackground)
 
         val customHigh = PresetRepository.createCustomPreset(targetKb = 10000, widthPx = 8000, heightPx = 9000)
         assertTrue(customHigh.targetMaxKb <= 2000)
         assertTrue(customHigh.widthPx <= 4000)
+        assertEquals(false, customHigh.requiresWhiteBackground)
     }
 }
