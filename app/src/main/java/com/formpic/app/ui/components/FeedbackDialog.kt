@@ -13,8 +13,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -59,7 +56,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.formpic.app.R
 import com.formpic.app.ui.theme.BlueAccent
-import com.formpic.app.ui.theme.EmeraldSuccess
 import com.formpic.app.ui.theme.NavyDeep
 import com.formpic.app.ui.theme.SlateBorder
 import com.formpic.app.ui.theme.SlateTextPrimary
@@ -72,7 +68,6 @@ enum class FeedbackCategory(val title: String, val icon: String) {
     GENERAL("General Feedback", "⭐")
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FeedbackDialog(
     onDismiss: () -> Unit
@@ -137,7 +132,7 @@ fun FeedbackDialog(
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Category Selector Chips
+                // Category Selector
                 Text(
                     text = "SELECT TOPIC",
                     fontSize = 11.sp,
@@ -147,38 +142,46 @@ fun FeedbackDialog(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    FeedbackCategory.values().forEach { category ->
-                        val isSelected = selectedCategory == category
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { selectedCategory = category },
-                            color = if (isSelected) Color(0xFFEFF6FF) else Color(0xFFF8FAFC),
-                            border = androidx.compose.foundation.BorderStroke(
-                                if (isSelected) 1.5.dp else 1.dp,
-                                if (isSelected) BlueAccent else SlateBorder
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(text = category.icon, fontSize = 13.sp)
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = category.title,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (isSelected) BlueAccent else SlateTextPrimary
-                                )
-                            }
-                        }
+                    val categories = FeedbackCategory.values()
+                    // Row 1
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CategoryChip(
+                            category = categories[0],
+                            isSelected = selectedCategory == categories[0],
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedCategory = categories[0] }
+                        )
+                        CategoryChip(
+                            category = categories[1],
+                            isSelected = selectedCategory == categories[1],
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedCategory = categories[1] }
+                        )
+                    }
+                    // Row 2
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        CategoryChip(
+                            category = categories[2],
+                            isSelected = selectedCategory == categories[2],
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedCategory = categories[2] }
+                        )
+                        CategoryChip(
+                            category = categories[3],
+                            isSelected = selectedCategory == categories[3],
+                            modifier = Modifier.weight(1f),
+                            onClick = { selectedCategory = categories[3] }
+                        )
                     }
                 }
 
@@ -205,7 +208,7 @@ fun FeedbackDialog(
                     placeholder = {
                         Text(
                             text = when (selectedCategory) {
-                                FeedbackCategory.REQUEST_EXAM -> "Specify Exam Name (e.g., UPPSC, MPSC, RPF), exact photo/signature KB limits, and pixel dimensions..."
+                                FeedbackCategory.REQUEST_EXAM -> "Specify Exam Name (e.g. UPPSC, MPSC, RPF), exact photo/signature KB limits, and pixel dimensions..."
                                 FeedbackCategory.PORTAL_ISSUE -> "Describe what error the portal showed, portal name, and what went wrong..."
                                 FeedbackCategory.FEATURE_SUGGESTION -> "Tell us what feature would make FormPic more useful for your application..."
                                 FeedbackCategory.GENERAL -> "Share your thoughts or experience using FormPic..."
@@ -271,7 +274,7 @@ fun FeedbackDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Action Buttons
+                // Action Handlers
                 val fullFeedbackBody = buildString {
                     appendLine("Category: ${selectedCategory.title}")
                     if (contactEmail.isNotBlank()) {
@@ -367,6 +370,40 @@ fun FeedbackDialog(
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CategoryChip(
+    category: FeedbackCategory,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onClick() },
+        color = if (isSelected) Color(0xFFEFF6FF) else Color(0xFFF8FAFC),
+        border = androidx.compose.foundation.BorderStroke(
+            if (isSelected) 1.5.dp else 1.dp,
+            if (isSelected) BlueAccent else SlateBorder
+        ),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = category.icon, fontSize = 13.sp)
+            Spacer(modifier = Modifier.width(5.dp))
+            Text(
+                text = category.title,
+                fontSize = 11.sp,
+                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                color = if (isSelected) BlueAccent else SlateTextPrimary
+            )
         }
     }
 }
