@@ -14,6 +14,9 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,12 +38,14 @@ import androidx.compose.material.icons.filled.FlashAuto
 import androidx.compose.material.icons.filled.FlashOff
 import androidx.compose.material.icons.filled.FlashOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -70,14 +76,34 @@ fun CameraScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var hasCameraPermission by remember { mutableStateOf(false) }
-    var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_FRONT) }
+    var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_FRONT) }
     var flashMode by remember { mutableIntStateOf(ImageCapture.FLASH_MODE_OFF) }
+    var isCapturing by remember { mutableStateOf(false) }
+    var rotationAngle by remember { mutableFloatStateOf(0f) }
+    val animatedRotation by animateFloatAsState(
+        targetValue = rotationAngle,
+        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing),
+        label = "camera_switch_rotation"
+    )
+
+    var cameraProvider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+    val previewView = remember {
+        PreviewView(context).apply {
+            scaleType = PreviewView.ScaleType.FILL_CENTER
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        }
+    }
 
     val imageCapture = remember {
         ImageCapture.Builder()
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
             .setFlashMode(flashMode)
             .build()
+    }
+
+    // Keep flashMode in sync
+    LaunchedEffect(flashMode) {
+        imageCapture.flashMode = flashMode
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -88,6 +114,49 @@ fun CameraScreen(
 
     LaunchedEffect(Unit) {
         permissionLauncher.launch(Manifest.permission.CAMERA)
+    }
+
+    // Obtain CameraProvider when permission is granted
+    LaunchedEffect(hasCameraPermission) {
+        if (hasCameraPermission) {
+            val future = ProcessCameraProvider.getInstance(context)
+            future.addListener({
+                try {
+                    cameraProvider = future.get()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }, ContextCompat.getMainExecutor(context))
+        }
+    }
+
+    // Reactively bind / rebind CameraX whenever lensFacing or cameraProvider updates!
+    LaunchedEffect(cameraProvider, lensFacing) {
+        val provider = cameraProvider ?: return@LaunchedEffect
+
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+
+        val cameraSelector = if (lensFacing == CameraSelector.LENS_FACING_FRONT && provider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        } else if (provider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)) {
+            CameraSelector.DEFAULT_BACK_CAMERA
+        } else {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        }
+
+        try {
+            provider.unbindAll()
+            provider.bindToLifecycle(
+                lifecycleOwner,
+                cameraSelector,
+                preview,
+                imageCapture
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     if (!hasCameraPermission) {
@@ -115,41 +184,10 @@ fun CameraScreen(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // CameraX Live Preview
+        // CameraX Live Preview with persistent PreviewView
         AndroidView(
             modifier = Modifier.fillMaxSize(),
-            factory = { ctx ->
-                val previewView = PreviewView(ctx)
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
-                    }
-
-                    val cameraSelector = CameraSelector.Builder()
-                        .requireLensFacing(lensFacing)
-                        .build()
-
-                    try {
-                        cameraProvider.unbindAll()
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            cameraSelector,
-                            preview,
-                            imageCapture
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }, ContextCompat.getMainExecutor(ctx))
-
-                previewView
-            },
-            update = { _ ->
-                imageCapture.flashMode = flashMode
-            }
+            factory = { previewView }
         )
 
         // Passport Oval Face Overlay
@@ -221,16 +259,36 @@ fun CameraScreen(
                     .padding(6.dp)
                     .clip(CircleShape)
                     .background(Color.White)
-                    .clickable {
-                        takePhoto(context, imageCapture, lensFacing == CameraSelector.LENS_FACING_FRONT) { bitmap ->
-                            onPhotoCaptured(bitmap)
-                        }
-                    }
-            )
+                    .clickable(enabled = !isCapturing) {
+                        isCapturing = true
+                        takePhoto(
+                            context = context,
+                            imageCapture = imageCapture,
+                            isFrontFacing = lensFacing == CameraSelector.LENS_FACING_FRONT,
+                            onSuccess = { bitmap ->
+                                isCapturing = false
+                                onPhotoCaptured(bitmap)
+                            },
+                            onError = {
+                                isCapturing = false
+                            }
+                        )
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                if (isCapturing) {
+                    CircularProgressIndicator(
+                        color = Color(0xFF0066CC),
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 3.dp
+                    )
+                }
+            }
 
-            // Switch Front/Back Camera
+            // Switch Front/Back Camera (Rotate Camera)
             IconButton(
                 onClick = {
+                    rotationAngle += 180f
                     lensFacing = if (lensFacing == CameraSelector.LENS_FACING_FRONT) {
                         CameraSelector.LENS_FACING_BACK
                     } else {
@@ -244,7 +302,8 @@ fun CameraScreen(
                 Icon(
                     imageVector = Icons.Default.Cameraswitch,
                     contentDescription = stringResource(R.string.flip_camera),
-                    tint = Color.White
+                    tint = Color.White,
+                    modifier = Modifier.rotate(animatedRotation)
                 )
             }
         }
@@ -255,28 +314,34 @@ private fun takePhoto(
     context: Context,
     imageCapture: ImageCapture,
     isFrontFacing: Boolean,
-    onSuccess: (Bitmap) -> Unit
+    onSuccess: (Bitmap) -> Unit,
+    onError: () -> Unit
 ) {
     val executor = ContextCompat.getMainExecutor(context)
     imageCapture.takePicture(executor, object : ImageCapture.OnImageCapturedCallback() {
         override fun onCaptureSuccess(image: ImageProxy) {
             val bitmap = imageProxyToBitmap(image, isFrontFacing)
             image.close()
-            onSuccess(bitmap)
+            if (bitmap != null) {
+                onSuccess(bitmap)
+            } else {
+                onError()
+            }
         }
 
         override fun onError(exception: ImageCaptureException) {
             exception.printStackTrace()
+            onError()
         }
     })
 }
 
-private fun imageProxyToBitmap(image: ImageProxy, isFrontFacing: Boolean): Bitmap {
-    val plane = image.planes[0]
+private fun imageProxyToBitmap(image: ImageProxy, isFrontFacing: Boolean): Bitmap? {
+    val plane = image.planes.getOrNull(0) ?: return null
     val buffer: ByteBuffer = plane.buffer
     val bytes = ByteArray(buffer.remaining())
     buffer.get(bytes)
-    val original = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    val original = BitmapFactory.decodeByteArray(bytes, 0, bytes.size) ?: return null
 
     val matrix = Matrix()
     matrix.postRotate(image.imageInfo.rotationDegrees.toFloat())
@@ -285,5 +350,10 @@ private fun imageProxyToBitmap(image: ImageProxy, isFrontFacing: Boolean): Bitma
         matrix.postScale(-1f, 1f)
     }
 
-    return Bitmap.createBitmap(original, 0, 0, original.width, original.height, matrix, true)
+    val transformed = Bitmap.createBitmap(original, 0, 0, original.width, original.height, matrix, true)
+    if (transformed != original) {
+        original.recycle()
+    }
+    return transformed
 }
+

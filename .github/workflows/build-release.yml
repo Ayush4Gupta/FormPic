@@ -73,23 +73,21 @@ jobs:
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v1.0.1
-          name: "FormPic v1.0.1 — Official Production Release"
+          tag_name: v1.0.2
+          name: "FormPic v1.0.2 — Official Production Release"
           body: |
-            ## FormPic v1.0.1 — Direct Android APK & AAB Release
+            ## FormPic v1.0.2 — Direct Android APK & AAB Release
             
             FormPic is a privacy-first, on-device photo resizer and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
             
             ### 📥 Download & Install on Android:
-            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.1/app-release.apk)
-            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.1/app-release.aab)
+            - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.2/app-release.apk)
+            - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.2/app-release.aab)
             
-            ### What's New in v1.0.1:
-            - 🎯 **Fixed Quick Preset Highlight**: Selection highlight now reactively tracks whether 25 KB, 50 KB, 75 KB, or 100 KB is selected.
-            - 📑 **Smart Deep-Link Tab Navigation**: "See All" opens Target KB, while "Official Exam Presets" opens Government & Exams directly.
-            - ⚡ **Dynamic Active Target Command Center**: Home Screen Hero Card dynamically displays the exact specifications, byte limits, and dimensions for the selected exam.
-            - 🏛️ **Top Exam Cards on Home**: 1-tap direct selection for SSC, UPSC, IBPS / SBI, and Passport Seva.
-            - 👁️ **Custom Parameter Visibility Fix**: Input fields now guarantee high-contrast dark text regardless of system dark mode.
+            ### What's New in v1.0.2:
+            - 🔄 **Fixed Camera Switch / Rotation**: Tapping the rotate camera button now dynamically unbinds and re-binds CameraX between front (selfie) and back cameras with animated feedback.
+            - 🎯 **Capture Quality & Safety**: Prevented double-tap capture lag and added null safety on image buffer decoding.
+            - 🏛️ **All v1.0.1 Features**: Quick KB reactive highlights, dynamic exam command center, official portal specs.
           files: |
             app/build/outputs/apk/release/app-release.apk
             app/build/outputs/bundle/release/app-release.aab
