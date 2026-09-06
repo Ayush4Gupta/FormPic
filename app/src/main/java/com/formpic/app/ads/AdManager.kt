@@ -18,8 +18,18 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
  */
 object AdManager {
 
-    // Official Google sample Interstitial Ad Unit ID for testing
+    // Official Google sample Interstitial Ad Unit ID for safe debug testing
     private const val TEST_INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+
+    // Official Production Interstitial Ad Unit ID for FormPic
+    private const val PROD_INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-2773192018816474/6540310380"
+
+    private val activeAdUnitId: String
+        get() = if (com.formpic.app.BuildConfig.DEBUG) {
+            TEST_INTERSTITIAL_AD_UNIT_ID
+        } else {
+            PROD_INTERSTITIAL_AD_UNIT_ID
+        }
 
     private var interstitialAd: InterstitialAd? = null
     private var isLoading = false
@@ -38,7 +48,7 @@ object AdManager {
 
         InterstitialAd.load(
             context,
-            TEST_INTERSTITIAL_AD_UNIT_ID,
+            activeAdUnitId,
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {

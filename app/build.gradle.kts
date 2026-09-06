@@ -20,8 +20,8 @@ android {
             useSupportLibrary = true
         }
 
-        // Default test AdMob App ID (Google official sample ID for development/testing)
-        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        // Official Production AdMob App ID
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-2773192018816474~6432499174"
     }
 
     buildTypes {
@@ -51,6 +51,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
