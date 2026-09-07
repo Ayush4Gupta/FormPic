@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ayush4gupta.github.io/ValidPic/sitemap.xml
