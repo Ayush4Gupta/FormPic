@@ -32,6 +32,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- MediaPipe Client-Side AI Selfie Segmentation -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
@@ -91,7 +95,7 @@
   <div class="ad-slot-wrap" id="top-ad-banner">
     <div class="ad-banner-box">
       <span class="ad-pill">SPONSORED</span>
-      <span class="ad-text">High-Speed Cloud Storage &amp; Govt Job Prep Resources (Ad Space)</span>
+      <span class="ad-text">Fast Cloud Storage &amp; Govt Job Prep Materials (Ad Space)</span>
     </div>
   </div>
 
@@ -102,11 +106,11 @@
     <section class="hero-block">
       <div class="privacy-pill">
         <span class="shield-icon">🔒</span>
-        <span>100% Private In-Browser AI • Photos Never Uploaded to Any Server</span>
+        <span>100% On-Device AI • Your Photos Are Never Uploaded</span>
       </div>
-      <h1 class="hero-title">Online Passport &amp; Exam Photo Resizer</h1>
+      <h1 class="hero-title">Passport Photo &amp; Signature Resizer</h1>
       <p class="hero-subtitle">
-        Compress photos and signatures strictly under <strong>20 KB, 50 KB, or 100 KB</strong>. Guaranteed acceptance on SSC, UPSC, IBPS, NEET &amp; state government exam portals.
+        Compress photos and signatures strictly under <strong>20 KB, 50 KB, or 100 KB</strong> with instant 1-tap framing and AI white background.
       </p>
     </section>
 
@@ -161,28 +165,112 @@
         </div>
       </div>
 
-      <!-- Stage 2: Result & Studio Editor (Appears seamlessly when image is loaded) -->
+      <!-- Stage 2: Result & Studio Editor (Direct 1:1 Parity with Android ResultPreviewScreen) -->
       <div class="editor-stage" id="editor-stage" style="display: none;">
         
-        <!-- Live Verification Badge (Identical to Android App) -->
+        <!-- Target Satisfied Badge (Android App Header Pill) -->
         <div class="verification-badge-container">
           <div class="verification-pill" id="verification-pill">
             <span class="check-icon">✓</span>
-            <span id="verification-text">46.8 KB (Guaranteed under 50 KB ✓) • 350 × 450 px</span>
+            <span id="verification-text">Strictly Under 50 KB ✓</span>
           </div>
         </div>
 
-        <!-- Preview Display Frame -->
-        <div class="preview-center-wrap">
-          <div class="photo-frame-card" id="photo-frame">
-            <canvas id="result-canvas"></canvas>
+        <!-- Interactive Before & After Photo Preview (From BeforeAfterSlider.kt) -->
+        <div class="before-after-container">
+          
+          <!-- Comparison Toggle Tabs -->
+          <div class="comparison-tabs">
+            <button type="button" class="comp-tab" id="btn-view-before">
+              <span>View Before (Original)</span>
+            </button>
+            <button type="button" class="comp-tab active" id="btn-view-after">
+              <span>View After (ValidPic Result)</span>
+            </button>
           </div>
-          <div class="orig-info-tag" id="orig-info-tag">Original: 1200 × 1600 px • 2.4 MB</div>
+
+          <!-- Image Display Frame with Border & Soft Shadow -->
+          <div class="preview-frame-box" id="preview-frame-box">
+            <!-- Canvas displaying the active view -->
+            <canvas id="active-canvas"></canvas>
+            
+            <!-- AI Segmentation Loading Overlay -->
+            <div id="ai-segment-spinner" class="ai-spinner-overlay" style="display: none;">
+              <div class="spinner-ring"></div>
+              <span>Applying AI White Background...</span>
+            </div>
+
+            <!-- View Label Floating Tag -->
+            <div class="floating-view-tag" id="floating-view-tag">✨ ValidPic Result</div>
+          </div>
+
         </div>
 
-        <!-- Target KB Selector Chips -->
+        <!-- 1-Tap Live Swappers (Direct from Android ResultPreviewScreen.kt) -->
+        <div class="swappers-container" id="swappers-container">
+          
+          <!-- Swapper 1: Framing (Passport Size 3.5×4.5 cm ⇄ Original Aspect Ratio) -->
+          <div class="swapper-card active-blue" id="swapper-framing" role="button" tabindex="0">
+            <div class="swapper-icon" id="framing-icon">📐</div>
+            <div class="swapper-text-block">
+              <div class="swapper-title" id="framing-title">Framing: Passport Size (3.5×4.5 cm)</div>
+              <div class="swapper-subtitle" id="framing-subtitle">Tap to switch to Original Photo Framing</div>
+            </div>
+            <div class="swapper-btn-pill blue-pill" id="framing-pill">Switch ⇄</div>
+          </div>
+
+          <!-- Swapper 2: Background (Pure White AI ⇄ Original Background) -->
+          <div class="swapper-card active-emerald" id="swapper-background" role="button" tabindex="0">
+            <div class="swapper-icon" id="bg-icon">🪄</div>
+            <div class="swapper-text-block">
+              <div class="swapper-title" id="bg-title">Background: Pure White (AI)</div>
+              <div class="swapper-subtitle" id="bg-subtitle">Tap to switch to Original Background</div>
+            </div>
+            <div class="swapper-btn-pill emerald-pill" id="bg-pill">Switch ⇄</div>
+          </div>
+
+        </div>
+
+        <!-- Signature Mode Banner (Visible only in Signature mode) -->
+        <div class="signature-info-card" id="signature-info-card" style="display: none;">
+          <span class="sig-icon">✒️</span>
+          <div>
+            <div class="sig-title">Official Signature Mode</div>
+            <div class="sig-desc">High-contrast ink extraction on clean white document paper. Calibrated for official portals.</div>
+          </div>
+        </div>
+
+        <!-- Photo Metadata Card (From Android ResultPreviewScreen.kt lines 285-325) -->
+        <div class="metadata-card">
+          <div class="metadata-row">
+            <span class="meta-label">Final File Size:</span>
+            <span class="meta-val highlight" id="meta-file-size">48.2 KB (Target: &le; 50 KB)</span>
+          </div>
+          <div class="metadata-row">
+            <span class="meta-label">Dimensions:</span>
+            <span class="meta-val" id="meta-dimensions">350 × 450 px</span>
+          </div>
+          <div class="metadata-row" id="row-meta-framing">
+            <span class="meta-label">Framing:</span>
+            <span class="meta-val" id="meta-framing">Passport (3.5×4.5 cm)</span>
+          </div>
+          <div class="metadata-row" id="row-meta-bg">
+            <span class="meta-label">Background:</span>
+            <span class="meta-val highlight-green" id="meta-background">Pure White (AI)</span>
+          </div>
+          <div class="metadata-row">
+            <span class="meta-label">File Format:</span>
+            <span class="meta-val">JPG (Standard Web &amp; Form)</span>
+          </div>
+          <div class="metadata-row">
+            <span class="meta-label">Requirement:</span>
+            <span class="meta-val" id="meta-requirement">Staff Selection Commission (SSC)</span>
+          </div>
+        </div>
+
+        <!-- Target File Size Quick Chips -->
         <div class="control-section">
-          <label class="control-label">Target File Size:</label>
+          <label class="control-label">Quick File Size Targets:</label>
           <div class="kb-chips-row">
             <button type="button" class="kb-chip" data-kb="20">Under 20 KB</button>
             <button type="button" class="kb-chip active" data-kb="50">Under 50 KB</button>
@@ -191,37 +279,12 @@
             <button type="button" class="kb-chip" id="chip-custom-kb" data-kb="custom">Custom KB...</button>
           </div>
 
-          <!-- Custom KB Slider Input (Hidden by default, shown when Custom is selected) -->
+          <!-- Custom KB Slider Input (Hidden by default) -->
           <div class="custom-kb-slider-box" id="custom-kb-slider-box" style="display: none;">
             <div class="slider-row">
-              <span class="slider-val-label">Target KB: <strong id="custom-kb-val">75 KB</strong></span>
+              <span class="slider-val-label">Target: <strong id="custom-kb-val">75 KB</strong></span>
               <input type="range" id="custom-kb-range" min="10" max="500" step="5" value="75">
             </div>
-          </div>
-        </div>
-
-        <!-- Enhancements Toggles (Mirroring Android App Switches) -->
-        <div class="toggles-card">
-          <div class="toggle-item">
-            <div class="toggle-meta">
-              <span class="toggle-title">Pure White Background</span>
-              <span class="toggle-desc">Boost contrast &amp; cleans gray/shadowy paper</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggle-white-bg" checked>
-              <span class="slider round"></span>
-            </label>
-          </div>
-
-          <div class="toggle-item">
-            <div class="toggle-meta">
-              <span class="toggle-title">Passport Size Ratio (3.5 × 4.5 cm)</span>
-              <span class="toggle-desc">Center-crops to official MEA / SSC portrait standard</span>
-            </div>
-            <label class="switch">
-              <input type="checkbox" id="toggle-passport-ratio" checked>
-              <span class="slider round"></span>
-            </label>
           </div>
         </div>
 
@@ -229,10 +292,10 @@
         <div class="actions-group">
           <button type="button" class="btn-primary-download" id="download-btn">
             <span class="btn-dl-icon">📥</span>
-            <span id="download-btn-text">Download Ready Photo (.jpg)</span>
+            <span id="download-btn-text">Download Photo (48.2 KB)</span>
           </button>
           <button type="button" class="btn-secondary-reset" id="reset-btn">
-            <span>🔄 Upload Another Image</span>
+            <span>🔄 Choose Another Photo</span>
           </button>
         </div>
 
@@ -245,7 +308,7 @@
       <div class="section-header-row">
         <div>
           <h2 class="section-title">Official Exam Specifications</h2>
-          <p class="section-desc">Tap any exam to instantly apply its official portal dimensions and file-size limits.</p>
+          <p class="section-desc">Tap any exam to instantly apply official portal dimensions and file-size targets.</p>
         </div>
         <div class="search-input-wrap">
           <input type="text" id="preset-search" class="search-field" placeholder="🔍 Search exam (SSC, UPSC, IBPS, NEET)...">
@@ -303,7 +366,7 @@
         <details class="faq-item">
           <summary class="faq-question">Are my sensitive ID photos uploaded to any server?</summary>
           <div class="faq-answer">
-            <p><strong>Never. 100% of processing occurs directly inside your browser.</strong> Unlike other online compressors that send your photos to remote cloud servers, ValidPic executes entirely via local HTML5 Canvas APIs on your phone or computer. Zero bytes of your photos are ever uploaded or stored anywhere.</p>
+            <p><strong>Never. 100% of processing occurs directly inside your browser.</strong> Unlike other online compressors that send your photos to remote cloud servers, ValidPic executes entirely via local HTML5 Canvas and on-device MediaPipe ML APIs on your phone or computer. Zero bytes of your photos are ever uploaded or stored anywhere.</p>
           </div>
         </details>
 

@@ -1,6 +1,6 @@
 /* ==========================================================================
    ValidPic Web Edition — Modern, User-Centric Design System
-   Matches Native Android App Identity: Deep Navy, Electric Blue & Emerald
+   Exact Parity with Native Android App (ResultPreviewScreen & BeforeAfterSlider)
    ========================================================================== */
 
 :root {
@@ -9,6 +9,7 @@
   --blue-accent: #2563EB;
   --blue-hover: #1D4ED8;
   --blue-light: #EFF6FF;
+  --blue-border: #BFDBFE;
   --emerald: #10B981;
   --emerald-bg: #ECFDF5;
   --emerald-border: #A7F3D0;
@@ -394,16 +395,17 @@ header.site-header {
 
 /* ==========================================
    Stage 2: Result & Studio Editor
+   Replicating Android ResultPreviewScreen.kt
    ========================================== */
 .editor-stage {
   padding: 24px;
 }
 
-/* Verification Badge (Identical to Android App) */
+/* Target Satisfied Badge */
 .verification-badge-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .verification-pill {
@@ -413,9 +415,9 @@ header.site-header {
   background: var(--emerald-bg);
   border: 1.5px solid var(--emerald-border);
   color: var(--emerald-text);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  padding: 8px 18px;
+  padding: 8px 20px;
   border-radius: 30px;
   box-shadow: 0 2px 6px rgba(16,185,129,0.15);
 }
@@ -433,39 +435,284 @@ header.site-header {
   font-weight: 900;
 }
 
-/* Photo Frame Card */
-.preview-center-wrap {
+/* Interactive Before & After Photo Preview */
+.before-after-container {
   text-align: center;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
-.photo-frame-card {
+.comparison-tabs {
+  background: #F1F5F9;
+  border-radius: 24px;
+  padding: 4px;
+  display: inline-flex;
+  margin: 0 auto 14px auto;
+  gap: 4px;
+}
+
+.comp-tab {
+  border: none;
+  background: transparent;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.comp-tab.active {
+  background: var(--navy-deep);
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(10,37,64,0.15);
+}
+
+.preview-frame-box {
   display: inline-block;
   background: #FFFFFF;
   padding: 10px;
-  border: 1px solid var(--slate-border);
+  border: 1.5px solid var(--slate-border);
   border-radius: 14px;
   box-shadow: 0 10px 25px rgba(10,37,64,0.1);
-  max-width: 260px;
+  max-width: 270px;
   width: 100%;
+  position: relative;
+  min-height: 200px;
 }
 
-.photo-frame-card canvas {
+.preview-frame-box canvas {
   width: 100%;
   height: auto;
   border-radius: 8px;
   display: block;
 }
 
-.orig-info-tag {
-  font-size: 12px;
-  color: var(--slate-muted);
+.floating-view-tag {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(10,37,64,0.85);
+  color: #FFFFFF;
+  padding: 3px 10px;
+  border-radius: 12px;
   margin-top: 8px;
+  display: inline-block;
+}
+
+/* AI Segmentation Spinner Overlay */
+.ai-spinner-overlay {
+  position: absolute;
+  inset: 10px;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(4px);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-deep);
+  z-index: 10;
+}
+
+.spinner-ring {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #E2E8F0;
+  border-top-color: var(--blue-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================
+   1-Tap Live Swappers (From Android ResultPreviewScreen.kt)
+   ========================================== */
+.swappers-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.swapper-card {
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: 1px solid;
+}
+
+.swapper-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Framing: Passport (Active Blue) vs Original (Slate) */
+.swapper-card.active-blue {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+}
+
+.swapper-card.inactive-slate {
+  background: #F1F5F9;
+  border-color: var(--slate-border);
+}
+
+/* Background: Pure White (Active Emerald) vs Original (Slate) */
+.swapper-card.active-emerald {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+}
+
+.swapper-icon {
+  font-size: 22px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+.swapper-text-block {
+  flex: 1;
+  text-align: left;
+}
+
+.swapper-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-deep);
+}
+
+.swapper-card.active-blue .swapper-title {
+  color: var(--blue-accent);
+}
+
+.swapper-card.active-emerald .swapper-title {
+  color: #065F46;
+}
+
+.swapper-subtitle {
+  font-size: 11px;
+  color: var(--slate-muted);
+  margin-top: 2px;
+}
+
+.swapper-card.active-blue .swapper-subtitle {
+  color: #1D4ED8;
+}
+
+.swapper-card.active-emerald .swapper-subtitle {
+  color: #047857;
+}
+
+.swapper-btn-pill {
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.blue-pill {
+  background: var(--blue-accent);
+}
+
+.emerald-pill {
+  background: var(--emerald);
+}
+
+.navy-pill {
+  background: var(--navy-deep);
+}
+
+/* Signature Mode Info Card */
+.signature-info-card {
+  background: #F1F5F9;
+  border: 1px solid var(--slate-border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.sig-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.sig-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-deep);
+}
+
+.sig-desc {
+  font-size: 11px;
+  color: var(--slate-muted);
+}
+
+/* ==========================================
+   Photo Metadata Card (From Android App)
+   ========================================== */
+.metadata-card {
+  background: #FFFFFF;
+  border: 1px solid var(--slate-border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+
+.metadata-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 7px 0;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.metadata-row:last-child {
+  border-bottom: none;
+}
+
+.meta-label {
+  color: var(--slate-muted);
+  font-weight: 500;
+}
+
+.meta-val {
+  color: var(--navy-deep);
+  font-weight: 600;
+}
+
+.meta-val.highlight {
+  color: var(--blue-accent);
+  font-weight: 700;
+}
+
+.meta-val.highlight-green {
+  color: #065F46;
+  font-weight: 700;
 }
 
 /* Target KB Chips */
 .control-section {
   margin-bottom: 18px;
+  text-align: left;
 }
 
 .control-label {
@@ -525,96 +772,13 @@ header.site-header {
 .slider-val-label {
   font-size: 13px;
   color: var(--slate-text);
-  min-width: 110px;
+  min-width: 100px;
 }
 
 .slider-row input[type="range"] {
   flex: 1;
   accent-color: var(--blue-accent);
   cursor: pointer;
-}
-
-/* Enhancements Toggles Card */
-.toggles-card {
-  background: #F8FAFC;
-  border: 1px solid var(--slate-border);
-  border-radius: var(--radius-md);
-  padding: 14px 18px;
-  margin-bottom: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.toggle-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.toggle-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.toggle-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy-deep);
-}
-
-.toggle-desc {
-  font-size: 11px;
-  color: var(--slate-muted);
-}
-
-/* iOS/Android Style Toggle Switch */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #CBD5E1;
-  transition: .2s;
-  border-radius: 24px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .2s;
-  border-radius: 50%;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-
-input:checked + .slider {
-  background-color: var(--blue-accent);
-}
-
-input:checked + .slider:before {
-  transform: translateX(20px);
 }
 
 /* Actions Group */
@@ -1067,5 +1231,17 @@ footer.site-footer {
 
   .search-field {
     width: 100%;
+  }
+
+  .comparison-tabs {
+    width: 100%;
+    display: flex;
+  }
+
+  .comp-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+    font-size: 11px;
   }
 }
