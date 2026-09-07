@@ -11,7 +11,7 @@ Best of all: **Samsung Galaxy Store is an officially supported app store by Goog
 Everything required to publish is already built and located in your repository:
 
 1. **Your Release APK File**:
-   - Download directly from your GitHub Release: [**app-release.apk (v1.0.8)**](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.8/app-release.apk)
+   - Download directly from your GitHub Release: [**app-release.apk (v1.0.8)**](https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.8/app-release.apk)
 2. **App Icon**:
    - 512 × 512 px (PNG format, max 1 MB)
 3. **Screenshots**:
@@ -104,7 +104,7 @@ Everything required to publish is already built and located in your repository:
 1. Click on the **"Binary"** or **"App Files"** tab.
 2. Click **"Add Binary"**.
 3. Choose **"Google Play / Android APK"**.
-4. Select and upload your downloaded [`app-release.apk`](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.8/app-release.apk).
+4. Select and upload your downloaded [`app-release.apk`](https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.8/app-release.apk).
 5. Samsung will automatically parse the file and detect:
    * **Package Name**: `com.validpic.app`
    * **Version Code**: `9`
