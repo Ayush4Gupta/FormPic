@@ -191,7 +191,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = stringResource(R.string.about_description),
+                        text = stringResource(R.string.about_desc),
                         fontSize = 13.sp,
                         color = SlateTextSecondary,
                         lineHeight = 18.sp
