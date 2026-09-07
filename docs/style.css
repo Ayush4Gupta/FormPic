@@ -283,6 +283,132 @@ header.site-header {
 }
 
 /* ==========================================
+   Upfront Settings Bar (Active from the start!)
+   ========================================== */
+.upfront-settings-bar {
+  background: #F8FAFC;
+  border-bottom: 1px solid var(--slate-border);
+  padding: 12px 18px;
+}
+
+.settings-subpanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.setting-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-deep);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pill-group {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.btn-setting-pill {
+  background: #FFFFFF;
+  border: 1px solid var(--slate-border);
+  color: var(--slate-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-setting-pill:hover {
+  border-color: var(--blue-accent);
+  color: var(--blue-accent);
+}
+
+.btn-setting-pill.active {
+  background: var(--blue-accent);
+  color: #FFFFFF;
+  border-color: var(--blue-accent);
+  box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+}
+
+/* Document / Custom Mode Settings Grid */
+.custom-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  text-align: left;
+}
+
+.custom-setting-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.custom-select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--slate-border);
+  font-size: 12px;
+  background: #FFFFFF;
+  color: var(--navy-deep);
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.custom-select:focus {
+  border-color: var(--blue-accent);
+}
+
+.custom-kb-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input-exact-kb {
+  width: 80px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--slate-border);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-accent);
+  text-align: center;
+  outline: none;
+}
+
+.input-exact-kb:focus {
+  border-color: var(--blue-accent);
+}
+
+.unit-kb {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-muted);
+}
+
+.slider-exact-kb {
+  width: 100%;
+  margin-top: 4px;
+  accent-color: var(--blue-accent);
+  cursor: pointer;
+}
+
+/* ==========================================
    Stage 1: Upload Dropzone
    ========================================== */
 .upload-stage {
@@ -476,7 +602,7 @@ header.site-header {
   border: 1.5px solid var(--slate-border);
   border-radius: 14px;
   box-shadow: 0 10px 25px rgba(10,37,64,0.1);
-  max-width: 270px;
+  max-width: 280px;
   width: 100%;
   position: relative;
   min-height: 200px;
@@ -487,6 +613,7 @@ header.site-header {
   height: auto;
   border-radius: 8px;
   display: block;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .floating-view-tag {
@@ -828,7 +955,7 @@ header.site-header {
 }
 
 /* ==========================================
-   Exam Presets Section
+   Exam Presets Section (Photos & Signatures)
    ========================================== */
 .presets-section {
   max-width: 1000px;
@@ -839,7 +966,7 @@ header.site-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -869,6 +996,38 @@ header.site-header {
 
 .search-field:focus {
   border-color: var(--blue-accent);
+}
+
+/* Category Filter Tabs */
+.preset-filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.preset-filter-pill {
+  background: #FFFFFF;
+  border: 1px solid var(--slate-border);
+  color: var(--slate-text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-filter-pill:hover {
+  border-color: var(--blue-accent);
+  color: var(--blue-accent);
+}
+
+.preset-filter-pill.active {
+  background: var(--navy-deep);
+  color: #FFFFFF;
+  border-color: var(--navy-deep);
+  box-shadow: 0 2px 8px rgba(10,37,64,0.15);
 }
 
 .presets-grid {
@@ -918,6 +1077,11 @@ header.site-header {
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 6px;
+}
+
+.preset-item-badge.sig-badge {
+  background: #ECFDF5;
+  color: #065F46;
 }
 
 .preset-item-desc {
@@ -1203,6 +1367,19 @@ footer.site-footer {
 
   .editor-stage {
     padding: 16px;
+  }
+
+  .upfront-settings-bar {
+    padding: 12px 14px;
+  }
+
+  .setting-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .custom-settings-grid {
+    grid-template-columns: 1fr;
   }
 
   .app-promo-card {

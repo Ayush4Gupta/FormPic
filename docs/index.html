@@ -7,7 +7,7 @@
   <!-- Primary SEO Metadata (Targeting Indian Exam Keywords) -->
   <title>ValidPic — Online Photo & Signature Resizer (Under 20 KB, 50 KB, 100 KB)</title>
   <meta name="description" content="Free online passport size photo resizer and signature compressor for Indian exams (SSC, UPSC, IBPS, NEET, Railway). 100% on-device privacy with zero server uploads.">
-  <meta name="keywords" content="photo to 50 kb, ssc photo resizer, upsc photo resize 50 kb, signature resize 20 kb, passport photo maker online white background, reduce photo size in kb, validpic">
+  <meta name="keywords" content="photo to 50 kb, ssc photo resizer, upsc photo resize 50 kb, signature resize 20 kb, ssc signature 20 kb, passport photo maker online white background, reduce photo size in kb, validpic">
   <meta name="author" content="ValidPic">
   <link rel="canonical" href="https://ayush4gupta.github.io/ValidPic/">
 
@@ -42,8 +42,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
 
-  <!-- Stylesheet (Cache-Busted v=2.1) -->
-  <link rel="stylesheet" href="style.css?v=2.1">
+  <!-- Stylesheet (Cache-Busted v=2.2) -->
+  <link rel="stylesheet" href="style.css?v=2.2">
 
   <!-- JSON-LD Structured Data for Google Rich Snippets -->
   <script type="application/ld+json">
@@ -141,6 +141,95 @@
         </button>
       </div>
 
+      <!-- Upfront Settings Bar (Configurable right from the start!) -->
+      <div class="upfront-settings-bar" id="upfront-settings-bar">
+        
+        <!-- Passport Settings Subpanel -->
+        <div class="settings-subpanel" id="panel-settings-passport">
+          <div class="setting-row">
+            <span class="setting-label">Target File Size:</span>
+            <div class="pill-group" id="upfront-kb-group">
+              <button type="button" class="btn-setting-pill" data-kb="20">Under 20 KB</button>
+              <button type="button" class="btn-setting-pill active" data-kb="50">Under 50 KB</button>
+              <button type="button" class="btn-setting-pill" data-kb="100">Under 100 KB</button>
+            </div>
+          </div>
+          
+          <div class="setting-row">
+            <span class="setting-label">Framing:</span>
+            <div class="pill-group" id="upfront-framing-group">
+              <button type="button" class="btn-setting-pill active" id="btn-upfront-crop-passport">📐 Passport (3.5×4.5 cm)</button>
+              <button type="button" class="btn-setting-pill" id="btn-upfront-crop-orig">🖼️ Original Framing</button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label">Background:</span>
+            <div class="pill-group" id="upfront-bg-group">
+              <button type="button" class="btn-setting-pill active" id="btn-upfront-bg-white">🪄 Pure White (AI)</button>
+              <button type="button" class="btn-setting-pill" id="btn-upfront-bg-orig">⚪ Keep Original</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signature Settings Subpanel -->
+        <div class="settings-subpanel" id="panel-settings-signature" style="display: none;">
+          <div class="setting-row">
+            <span class="setting-label">Target File Size:</span>
+            <div class="pill-group" id="upfront-sig-kb-group">
+              <button type="button" class="btn-setting-pill" data-sig-kb="10">Under 10 KB</button>
+              <button type="button" class="btn-setting-pill active" data-sig-kb="20">Under 20 KB (SSC/IBPS)</button>
+              <button type="button" class="btn-setting-pill" data-sig-kb="30">Under 30 KB (NEET)</button>
+              <button type="button" class="btn-setting-pill" data-sig-kb="50">Under 50 KB</button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <span class="setting-label">Ink Contrast:</span>
+            <div class="pill-group">
+              <button type="button" class="btn-setting-pill active" id="btn-sig-contrast-high">🖋️ High-Contrast Ink (Clean White Paper)</button>
+              <button type="button" class="btn-setting-pill" id="btn-sig-contrast-orig">Original Scan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Document / Custom Settings Subpanel (Full Custom Options!) -->
+        <div class="settings-subpanel" id="panel-settings-custom" style="display: none;">
+          <div class="custom-settings-grid">
+            <div class="custom-setting-col">
+              <label class="setting-label" for="custom-exact-kb-input">Target Size (KB):</label>
+              <div class="custom-kb-input-wrap">
+                <input type="number" id="custom-exact-kb-input" min="5" max="1000" value="100" class="input-exact-kb">
+                <span class="unit-kb">KB</span>
+              </div>
+              <input type="range" id="custom-exact-kb-slider" min="10" max="500" step="5" value="100" class="slider-exact-kb">
+            </div>
+
+            <div class="custom-setting-col">
+              <label class="setting-label" for="custom-aspect-select">Aspect Ratio / Framing:</label>
+              <select id="custom-aspect-select" class="custom-select">
+                <option value="original" selected>Preserve Original Framing</option>
+                <option value="passport">3.5 × 4.5 cm (Portrait Passport)</option>
+                <option value="square">1 : 1 (Square / UPSC Min 350px)</option>
+                <option value="4_3">4 : 3 (Standard Photo)</option>
+                <option value="signature">2 : 1 (Wide Signature)</option>
+                <option value="a4">A4 Document / Marksheet</option>
+              </select>
+            </div>
+
+            <div class="custom-setting-col">
+              <label class="setting-label" for="custom-bg-select">Background &amp; Quality:</label>
+              <select id="custom-bg-select" class="custom-select">
+                <option value="original" selected>Preserve Original Background</option>
+                <option value="white">Pure White Background (AI)</option>
+                <option value="doc_clean">Clean Document Paper Contrast</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- Stage 1: Upload Dropzone (Visible when no image is loaded) -->
       <div class="upload-stage" id="upload-stage">
         <div class="dropzone-box" id="dropzone">
@@ -202,7 +291,7 @@
             <!-- AI Segmentation Loading Overlay -->
             <div id="ai-segment-spinner" class="ai-spinner-overlay" style="display: none;">
               <div class="spinner-ring"></div>
-              <span>Applying AI White Background...</span>
+              <span>Isolating subject with AI...</span>
             </div>
 
             <!-- View Label Floating Tag -->
@@ -253,7 +342,7 @@
           </div>
           <div class="metadata-row">
             <span class="meta-label">Dimensions:</span>
-            <span class="meta-val" id="meta-dimensions">350 × 450 px</span>
+            <span class="meta-val" id="meta-dimensions">420 × 540 px</span>
           </div>
           <div class="metadata-row" id="row-meta-framing">
             <span class="meta-label">Framing:</span>
@@ -312,12 +401,28 @@
     <section class="presets-section">
       <div class="section-header-row">
         <div>
-          <h2 class="section-title">Official Exam Specifications</h2>
-          <p class="section-desc">Tap any exam to instantly apply official portal dimensions and file-size targets.</p>
+          <h2 class="section-title">Official Exam Specifications (Photos &amp; Signatures)</h2>
+          <p class="section-desc">Tap any specification to automatically load its official dimensions, background, and file-size targets.</p>
         </div>
         <div class="search-input-wrap">
           <input type="text" id="preset-search" class="search-field" placeholder="🔍 Search exam (SSC, UPSC, IBPS, NEET)...">
         </div>
+      </div>
+
+      <!-- Category Filter Tabs: All, Photos, Signatures, Documents -->
+      <div class="preset-filter-tabs" role="tablist">
+        <button type="button" class="preset-filter-pill active" data-category="all">
+          <span>🌟 All Standards (15)</span>
+        </button>
+        <button type="button" class="preset-filter-pill" data-category="photo">
+          <span>📸 Photo Specs (7)</span>
+        </button>
+        <button type="button" class="preset-filter-pill" data-category="signature">
+          <span>✍️ Signature Specs (7)</span>
+        </button>
+        <button type="button" class="preset-filter-pill" data-category="document">
+          <span>📄 Certificates &amp; Docs</span>
+        </button>
       </div>
 
       <div class="presets-grid" id="presets-list">
@@ -429,8 +534,8 @@
     </div>
   </footer>
 
-  <!-- Application Logic (Cache-Busted v=2.1) -->
-  <script src="app.js?v=2.1"></script>
+  <!-- Application Logic (Cache-Busted v=2.2) -->
+  <script src="app.js?v=2.2"></script>
 
 </body>
 </html>
