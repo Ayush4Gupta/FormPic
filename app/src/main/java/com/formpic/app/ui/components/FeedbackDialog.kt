@@ -101,8 +101,8 @@ fun FeedbackDialog(
     var dialogState by remember { mutableStateOf(FeedbackDialogState.INPUT) }
     var failureReason by remember { mutableStateOf("") }
 
-    val appVersionName = "1.0.6"
-    val appVersionCode = 7
+    val appVersionName = "1.0.7"
+    val appVersionCode = 8
 
     val fullFeedbackBody = remember(selectedCategory, contactEmail, messageText) {
         buildString {

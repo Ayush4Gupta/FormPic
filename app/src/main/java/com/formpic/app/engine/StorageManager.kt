@@ -15,25 +15,78 @@ import java.util.Date
 import java.util.Locale
 
 /**
+ * Storage destination presets for candidate convenience.
+ */
+enum class SaveFolderOption(
+    val id: String,
+    val title: String,
+    val directoryType: String,
+    val relativeSubpath: String,
+    val description: String
+) {
+    PICTURES(
+        id = "pictures",
+        title = "Pictures / FormPic",
+        directoryType = Environment.DIRECTORY_PICTURES,
+        relativeSubpath = "Pictures/FormPic",
+        description = "Standard gallery location — visible in Google Photos, Gallery & Camera apps"
+    ),
+    DOWNLOADS(
+        id = "downloads",
+        title = "Downloads / FormPic",
+        directoryType = Environment.DIRECTORY_DOWNLOADS,
+        relativeSubpath = "Download/FormPic",
+        description = "Recommended for exam portals — easiest to locate when uploading in browser (SSC, UPSC)"
+    ),
+    DCIM(
+        id = "dcim",
+        title = "DCIM / FormPic",
+        directoryType = Environment.DIRECTORY_DCIM,
+        relativeSubpath = "DCIM/FormPic",
+        description = "Camera roll album — saved alongside your device camera photos"
+    )
+}
+
+/**
  * Manages modern scoped storage saving, sharing via FileProvider, and cache hygiene.
  */
 object StorageManager {
 
     private const val ALBUM_NAME = "FormPic"
+    private const val PREFS_NAME = "formpic_storage_prefs"
+    private const val KEY_SAVE_FOLDER = "key_save_folder"
 
     /**
-     * Saves photo byte array directly into device Pictures/FormPic gallery.
+     * Retrieves the candidate's preferred save location. Defaults to Pictures/FormPic.
+     */
+    fun getSaveFolderOption(context: Context): SaveFolderOption {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val savedId = prefs.getString(KEY_SAVE_FOLDER, SaveFolderOption.PICTURES.id)
+        return SaveFolderOption.values().firstOrNull { it.id == savedId } ?: SaveFolderOption.PICTURES
+    }
+
+    /**
+     * Updates the candidate's preferred save location.
+     */
+    fun setSaveFolderOption(context: Context, option: SaveFolderOption) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit().putString(KEY_SAVE_FOLDER, option.id).apply()
+    }
+
+    /**
+     * Saves photo byte array directly into candidate's chosen directory.
      * Uses MediaStore with IS_PENDING on Android 10+ for zero storage permission friction.
      */
     fun saveImageToGallery(context: Context, imageBytes: ByteArray, prefix: String = "Passport"): Uri? {
         val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         val filename = "FormPic_${prefix}_$timestamp.jpg"
+        val saveOption = getSaveFolderOption(context)
 
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, filename)
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/$ALBUM_NAME")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "${saveOption.directoryType}/$ALBUM_NAME")
                 put(MediaStore.Images.Media.IS_PENDING, 1)
             }
         }
@@ -58,6 +111,29 @@ object StorageManager {
             // Clean up incomplete file
             resolver.delete(uri, null, null)
             null
+        }
+    }
+
+    /**
+     * Opens the device gallery or files viewer to easily access saved FormPic files.
+     */
+    fun openSavedPhotosFolder(context: Context) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            try {
+                val fallbackIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                    type = "image/*"
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                context.startActivity(fallbackIntent)
+            } catch (e2: Exception) {
+                // Device does not have an activity capable of handling
+            }
         }
     }
 
