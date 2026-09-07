@@ -613,7 +613,7 @@ header.site-header {
   height: auto;
   border-radius: 8px;
   display: block;
-  image-rendering: -webkit-optimize-contrast;
+  image-rendering: auto; /* Clean, smooth anti-aliased preview without nearest-neighbor shimmering or speckles */
 }
 
 .floating-view-tag {

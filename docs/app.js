@@ -822,6 +822,67 @@ function triggerAiSegmentation(img) {
   }
 }
 
+function createCleanSolidMask(segmentationMask, w, h) {
+  // Use intermediate resolution for instant performance (512px max dimension)
+  const scale = Math.min(1, 512 / Math.max(w, h));
+  const mw = Math.round(w * scale);
+  const mh = Math.round(h * scale);
+
+  const mCanvas = document.createElement("canvas");
+  mCanvas.width = mw;
+  mCanvas.height = mh;
+  const mctx = mCanvas.getContext("2d");
+  mctx.imageSmoothingEnabled = true;
+  mctx.imageSmoothingQuality = "high";
+  mctx.drawImage(segmentationMask, 0, 0, mw, mh);
+
+  // Read mask pixels and apply solid-core threshold to prevent white bleed-through
+  const imgData = mctx.getImageData(0, 0, mw, mh);
+  const d = imgData.data;
+  const total = d.length;
+
+  for (let i = 0; i < total; i += 4) {
+    // MediaPipe mask may store confidence in red or alpha channel
+    const val = Math.max(d[i], d[i + 3]);
+
+    if (val >= 85) {
+      // 100% Solid foreground - prevents translucent holes and white dots on skin/hair
+      d[i] = 255;
+      d[i + 1] = 255;
+      d[i + 2] = 255;
+      d[i + 3] = 255;
+    } else if (val <= 20) {
+      // 100% Background - transparent
+      d[i] = 0;
+      d[i + 1] = 0;
+      d[i + 2] = 0;
+      d[i + 3] = 0;
+    } else {
+      // Smooth anti-aliased silhouette contour
+      const norm = (val - 20) / (85 - 20);
+      const smooth = Math.round((norm * norm * (3 - 2 * norm)) * 255);
+      d[i] = smooth;
+      d[i + 1] = smooth;
+      d[i + 2] = smooth;
+      d[i + 3] = smooth;
+    }
+  }
+
+  mctx.putImageData(imgData, 0, 0);
+
+  // Scale up to full dimensions with subtle smoothing for hair contour
+  const finalMaskCanvas = document.createElement("canvas");
+  finalMaskCanvas.width = w;
+  finalMaskCanvas.height = h;
+  const fctx = finalMaskCanvas.getContext("2d");
+  fctx.imageSmoothingEnabled = true;
+  fctx.imageSmoothingQuality = "high";
+  fctx.filter = "blur(1.5px)";
+  fctx.drawImage(mCanvas, 0, 0, w, h);
+
+  return finalMaskCanvas;
+}
+
 function onMediaPipeResults(results) {
   const spinner = document.getElementById("ai-segment-spinner");
   if (spinner) spinner.style.display = "none";
@@ -829,7 +890,6 @@ function onMediaPipeResults(results) {
 
   if (!results || !results.segmentationMask || !sourceImage) return;
 
-  // Composite foreground smoothly onto pure white without bleaching face
   const w = sourceImage.naturalWidth;
   const h = sourceImage.naturalHeight;
 
@@ -840,14 +900,17 @@ function onMediaPipeResults(results) {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
 
-  // 1. Draw segmentation mask
-  ctx.drawImage(results.segmentationMask, 0, 0, w, h);
+  // 1. Generate solid-core anti-aliased mask (zero pinholes or noise)
+  const cleanMask = createCleanSolidMask(results.segmentationMask, w, h);
 
-  // 2. Keep only pixels overlapping the mask (foreground person)
+  // 2. Draw solid mask
+  ctx.drawImage(cleanMask, 0, 0, w, h);
+
+  // 3. Keep foreground person with 100% solid opacity (no white bleed-through)
   ctx.globalCompositeOperation = "source-in";
   ctx.drawImage(sourceImage, 0, 0, w, h);
 
-  // 3. Draw pure white behind person
+  // 4. Draw pure studio white behind person
   ctx.globalCompositeOperation = "destination-over";
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, w, h);
@@ -860,22 +923,20 @@ function onMediaPipeResults(results) {
 }
 
 /**
- * World-Class Resampling Engine
- * Uses Pica Lanczos3 algorithm with Unsharp Masking, falling back to Multi-Step Progressive Halving
+ * High-Fidelity Resampling Engine
+ * Uses Pica Lanczos2 (artifact-free, zero Gibbs ringing, zero speckles)
+ * with Multi-Step Progressive Halving fallback
  */
 async function highQualityDownsample(srcCanvas, targetW, targetH) {
   const outCanvas = document.createElement("canvas");
   outCanvas.width = targetW;
   outCanvas.height = targetH;
 
-  // Option 1: Pica Lanczos3 Resampling with Edge Unsharp Mask
+  // Option 1: Pica Clean Lanczos2 Resampling (Pristine, smooth, zero noise)
   if (picaResizer) {
     try {
       await picaResizer.resize(srcCanvas, outCanvas, {
-        filter: "lanczos3",
-        unsharpAmount: 85,
-        unsharpRadius: 0.6,
-        unsharpThreshold: 2
+        filter: "lanczos2"
       });
       return outCanvas;
     } catch (e) {
@@ -883,7 +944,7 @@ async function highQualityDownsample(srcCanvas, targetW, targetH) {
     }
   }
 
-  // Option 2: Multi-Step Progressive Halving (Prevents moiré noise & pixel decimation)
+  // Option 2: Multi-Step Progressive Halving (100% smooth, natural, zero noise)
   let curCanvas = srcCanvas;
   let curW = srcCanvas.width;
   let curH = srcCanvas.height;
@@ -909,48 +970,7 @@ async function highQualityDownsample(srcCanvas, targetW, targetH) {
   outCtx.imageSmoothingQuality = "high";
   outCtx.drawImage(curCanvas, 0, 0, targetW, targetH);
 
-  // Apply subtle studio unsharp mask
-  applyUnsharpMask(outCtx, targetW, targetH, 0.35);
-
   return outCanvas;
-}
-
-/**
- * Unsharp Mask Filter (Restores eyelash, iris, and hair edge sharpness)
- */
-function applyUnsharpMask(ctx, w, h, amount) {
-  try {
-    const imgData = ctx.getImageData(0, 0, w, h);
-    const data = imgData.data;
-    const copy = new Uint8ClampedArray(data);
-
-    const weights = [
-      0, -1, 0,
-      -1, 5, -1,
-      0, -1, 0
-    ];
-
-    for (let y = 1; y < h - 1; y++) {
-      for (let x = 1; x < w - 1; x++) {
-        const idx = (y * w + x) * 4;
-
-        for (let c = 0; c < 3; c++) {
-          let sum = 0;
-          let k = 0;
-          for (let ky = -1; ky <= 1; ky++) {
-            for (let kx = -1; kx <= 1; kx++) {
-              const pIdx = ((y + ky) * w + (x + kx)) * 4 + c;
-              sum += copy[pIdx] * weights[k++];
-            }
-          }
-          data[idx + c] = Math.min(255, Math.max(0, copy[idx + c] * (1 - amount) + sum * amount));
-        }
-      }
-    }
-    ctx.putImageData(imgData, 0, 0);
-  } catch (e) {
-    // Ignore canvas security errors if any
-  }
 }
 
 async function renderActivePhoto() {
@@ -1099,18 +1119,28 @@ function enhanceSignatureInk(ctx, w, h) {
   const imgData = ctx.getImageData(0, 0, w, h);
   const data = imgData.data;
 
-  // Clean paper shadows while keeping ink lines dark and smooth
+  // Smooth paper whitening and ink contrast enhancement without speckle noise
   for (let i = 0; i < data.length; i += 4) {
     const r = data[i], g = data[i + 1], b = data[i + 2];
-    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
 
-    if (luminance > 190) {
+    // Smooth ramp: paper background gently lifted to white, ink darkened smoothly
+    if (lum > 215) {
       data[i] = 255;
       data[i + 1] = 255;
       data[i + 2] = 255;
+    } else if (lum > 135) {
+      // Smooth feathering between ink and paper (avoids white dot speckles)
+      const factor = (lum - 135) / (215 - 135); // 0 to 1
+      const inkDarken = 0.75 + 0.25 * factor;
+      const targetVal = lum * inkDarken + (255 - lum) * factor;
+      data[i] = Math.min(255, Math.max(0, targetVal));
+      data[i + 1] = Math.min(255, Math.max(0, targetVal));
+      data[i + 2] = Math.min(255, Math.max(0, targetVal));
     } else {
-      data[i] = Math.max(0, r * 0.7);
-      data[i + 1] = Math.max(0, g * 0.7);
+      // Solid dark ink lines
+      data[i] = Math.max(0, r * 0.75);
+      data[i + 1] = Math.max(0, g * 0.75);
       data[i + 2] = Math.max(0, b * 0.85);
     }
   }
