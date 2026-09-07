@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- FormPic Brand Palette: Trustworthy Indian Navy, Crisp White, Emerald Success -->
+    <!-- ValidPic Brand Palette: Trustworthy Indian Navy, Crisp White, Emerald Success -->
     <color name="primary_navy">#0A2540</color>
     <color name="primary_blue">#0066CC</color>
     <color name="primary_blue_light">#E6F0FA</color>

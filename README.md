@@ -1,4 +1,4 @@
-# FormPic — Indian Passport & Exam Photo Maker (Under 50 KB)
+# ValidPic — Indian Passport & Exam Photo Maker (Under 50 KB)
 
 [![Android](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)](https://android.com)
 [![Kotlin](https://img.shields.io/badge/Language-Kotlin%202.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
@@ -6,7 +6,7 @@
 [![ML Kit](https://img.shields.io/badge/On--Device%20AI-Google%20ML%20Kit-FF6F00?logo=google&logoColor=white)](https://developers.google.com/ml-kit)
 [![Target Size](https://img.shields.io/badge/Target-Under%2050%20KB%20Guaranteed-10B981)](#exact-kb-compression-engine)
 
-FormPic is a modern, privacy-first, on-device Android application designed specifically for Indian applicants filling out government exam forms (SSC, UPSC, IBPS, NEET, RRB), passports (Passport Seva / MEA), visas, and university admission portals.
+ValidPic is a modern, privacy-first, on-device Android application designed specifically for Indian applicants filling out government exam forms (SSC, UPSC, IBPS, NEET, RRB), passports (Passport Seva / MEA), visas, and university admission portals.
 
 The user mental model is straightforward:
 > **TAKE / CHOOSE PHOTO ➔ SELECT REQUIREMENT (e.g. Under 50 KB) ➔ DONE!**
@@ -41,14 +41,14 @@ The user mental model is straightforward:
    - Google AdMob Interstitial ad prior to photo download with frequency capping.
    - **Fail-Safe Fallback:** If an ad fails to load or the device is offline, **download is NEVER blocked**. Usability is never sacrificed.
 7. **Modern Android Scoped Storage**
-   - Saves to `Pictures/FormPic` using MediaStore APIs (no unnecessary legacy permissions required on Android 10+).
+   - Saves to `Pictures/ValidPic` using MediaStore APIs (no unnecessary legacy permissions required on Android 10+).
 
 ---
 
 ## 🏗️ Architecture & Technology Stack
 
 ```
-com.formpic.app/
+com.validpic.app/
 ├── data/
 │   ├── model/
 │   │   ├── PhotoPreset.kt             # Official presets specification model
@@ -69,7 +69,7 @@ com.formpic.app/
 │   ├── components/                    # PassportGuideOverlay, BeforeAfterSlider, etc.
 │   ├── screens/                       # Home, Camera, Presets, Processing, Result, etc.
 │   └── viewmodel/                     # Central PhotoProcessViewModel
-└── FormPicApp.kt & MainActivity.kt    # Compose Navigation entry points
+└── ValidPicApp.kt & MainActivity.kt    # Compose Navigation entry points
 ```
 
 ---

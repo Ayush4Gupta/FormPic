@@ -6,16 +6,16 @@ Publishing your Android app on the **Amazon Appstore** is completely **FREE** ($
 
 ## 📋 What You Need Before Starting
 
-All required files are already built and ready in your FormPic repository:
+All required files are already built and ready in your ValidPic repository:
 
 1. **Your Release APK File**:
-   - Download directly from your GitHub release: [app-release.apk (v1.0.3)](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.3/app-release.apk)
+   - Download directly from your GitHub release: [app-release.apk (v1.0.3)](https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.3/app-release.apk)
 2. **App Icon**:
    - Size: 512 × 512 px PNG (located in `docs/assets/` or repository artifacts)
 3. **Screenshots**:
    - 3 to 5 screenshots taken from your phone (Portrait, JPG or PNG, e.g. 1080 × 2400 px or 1080 × 1920 px)
 4. **Privacy Policy URL**:
-   - `https://ayush4gupta.github.io/FormPic/` (Live on your GitHub Pages)
+   - `https://ayush4gupta.github.io/ValidPic/` (Live on your GitHub Pages)
 
 ---
 
@@ -24,7 +24,7 @@ All required files are already built and ready in your FormPic repository:
 1. Open **[Amazon Developer Portal](https://developer.amazon.com/)** in your browser.
 2. Click **"Sign In"** (top right) and log in with your existing Amazon account (or create a new free Amazon account).
 3. Fill in your **Developer Profile**:
-   - **Developer / Company Name**: Enter your name (e.g. *Ayush Gupta*) or brand (*FormPic*).
+   - **Developer / Company Name**: Enter your name (e.g. *Ayush Gupta*) or brand (*ValidPic*).
    - **Email & Phone Number**: Your contact details.
 4. Accept the **Amazon Services Developer Agreement**.
 5. Click **"Complete Registration"**.
@@ -38,8 +38,8 @@ All required files are already built and ready in your FormPic repository:
 1. Go to the **[Amazon Developer Console](https://developer.amazon.com/dashboard)**.
 2. Click **"Add New App"** and select **"Android"**.
 3. Fill in the initial modal:
-   - **App Title**: `FormPic - Passport Photo & Exact KB Resizer`
-   - **App SKU**: `com.formpic.app`
+   - **App Title**: `ValidPic - Passport Photo & Exact KB Resizer`
+   - **App SKU**: `com.validpic.app`
    - **App Category**: Select **Photo & Video** (or **Utilities**).
 4. Click **"Save"**.
 
@@ -52,7 +52,7 @@ Amazon will guide you through tabs on the left menu:
 ### 1. General Information
 - **Default Language**: English (United States) or English (India)
 - **Support Contact Email**: Your email address
-- **Privacy Policy URL**: `https://ayush4gupta.github.io/FormPic/`
+- **Privacy Policy URL**: `https://ayush4gupta.github.io/ValidPic/`
 
 ### 2. Availability & Pricing
 - **Where will this app be available?**: Select **"In all countries and regions where Amazon sells apps"** (or select India + Global).
@@ -62,10 +62,10 @@ Amazon will guide you through tabs on the left menu:
 Copy and paste this ready-to-use text:
 
 - **Short Description** (1–2 sentences):
-  > FormPic is an on-device photo resizer and background isolation tool tailored for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and job application portals.
+  > ValidPic is an on-device photo resizer and background isolation tool tailored for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and job application portals.
 
 - **Long Description**:
-  > FormPic solves the biggest frustration for Indian exam and job candidates: strict file size and dimension rejections on government portals.
+  > ValidPic solves the biggest frustration for Indian exam and job candidates: strict file size and dimension rejections on government portals.
   >
   > ✨ Key Features:
   > • Exact Target File Sizes: Compress photos strictly under 25 KB, 50 KB, 75 KB, or 100 KB.
@@ -114,7 +114,7 @@ Copy and paste this ready-to-use text:
 1. Click on the **APK Files** or **App Submissions** tab.
 2. Under **Apply Amazon DRM?**, select **"No"** (DRM is optional, selecting No ensures maximum compatibility).
 3. Under **Binary File**:
-   - Click **"Upload"** and choose your [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.3/app-release.apk).
+   - Click **"Upload"** and choose your [app-release.apk](https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.3/app-release.apk).
 4. **Target Devices**:
    - Check **"All Android mobile devices"** (and Fire tablets if selected).
 5. **Export Compliance**:

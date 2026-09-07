@@ -1,9 +1,9 @@
-# FormPic — Google Play Store Publishing & ASO Strategy
+# ValidPic — Google Play Store Publishing & ASO Strategy
 
 ## 1. App Store Optimization (ASO) Metadata
 
 ### App Title (30 characters max)
-`FormPic: Passport & Exam Photo` (30 characters)
+`ValidPic: Passport & Exam Photo` (30 characters)
 
 ### Short Description (80 characters max)
 `Passport & exam photos with clean white background. Exact Under 50 KB guarantee.` (80 characters)
@@ -14,9 +14,9 @@ Need an application-ready passport or exam photo in seconds?
 
 Most Indian government portals (SSC, UPSC, IBPS, NEET, Railway, State PSCs) reject photos if they are even 1 KB over the limit or lack a plain white background. 
 
-FormPic solves this instantly. Simply take a selfie or pick a photo from your gallery. FormPic automatically aligns your face, replaces messy backgrounds with pure clean white, and compresses your image strictly under your required file size.
+ValidPic solves this instantly. Simply take a selfie or pick a photo from your gallery. ValidPic automatically aligns your face, replaces messy backgrounds with pure clean white, and compresses your image strictly under your required file size.
 
-⭐ WHY CHOOSE FORMPIC?
+⭐ WHY CHOOSE VALIDPIC?
 
 ✅ EXACT FILE SIZE GUARANTEE (UNDER 25 KB / 50 KB / 75 KB / 100 KB)
 Never face "File size exceeds 50 KB" rejection again. Our intelligent engine verifies the exact byte count so your photo is guaranteed to upload smoothly.
@@ -50,9 +50,9 @@ No need to understand DPI, aspect ratios, or JPEG quality algorithms. Just selec
 ---
 
 💡 PRIVACY GUARANTEE:
-FormPic does not collect, store, or upload personal photos. Everything is processed offline on your smartphone.
+ValidPic does not collect, store, or upload personal photos. Everything is processed offline on your smartphone.
 
-*Disclaimer: FormPic prepares photos strictly according to published portal guidelines. FormPic is an independent utility and is not affiliated with any government agency.*
+*Disclaimer: ValidPic prepares photos strictly according to published portal guidelines. ValidPic is an independent utility and is not affiliated with any government agency.*
 ```
 
 ---
@@ -102,7 +102,7 @@ FormPic does not collect, store, or upload personal photos. Everything is proces
 
 - **Background**: Deep Trust Navy (`#0A2540`) with modern subtle geometric angled lines in Royal Blue (`#0066CC`).
 - **Left Side**: Bold White Typography:
-  - *"FormPic"*
+  - *"ValidPic"*
   - *"Application-Ready Passport Photos"*
   - Pill Tag: *"Under 50 KB • Clean White Background"*
 - **Right Side**: Tilted 3D floating passport photo card on pure white backdrop, featuring an emerald verified stamp: `48.7 KB ✓ PASS`.

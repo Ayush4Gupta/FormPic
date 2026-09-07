@@ -1,4 +1,4 @@
-# FormPic R8 / ProGuard Configuration
+# ValidPic R8 / ProGuard Configuration
 
 # Kotlin Coroutines
 -keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
@@ -26,7 +26,7 @@
 -dontwarn com.google.android.gms.ads.**
 
 # Keep models for JSON / State serialization if needed
--keepclassmembers class com.formpic.app.data.model.** {
+-keepclassmembers class com.validpic.app.data.model.** {
     <fields>;
     <methods>;
 }

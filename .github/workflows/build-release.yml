@@ -1,4 +1,4 @@
-name: Build FormPic Release Artifacts (AAB & APK)
+name: Build ValidPic Release Artifacts (AAB & APK)
 
 on:
   push:
@@ -30,20 +30,20 @@ jobs:
         run: |
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "Using production release keystore from repository secret"
-            echo "$KEYSTORE_BASE64" | base64 --decode > formpic-release.jks
+            echo "$KEYSTORE_BASE64" | base64 --decode > validpic-release.jks
             cat <<EOF > keystore.properties
-          storeFile=formpic-release.jks
+          storeFile=validpic-release.jks
           storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-          keyAlias=formpic-key
+          keyAlias=validpic-key
           keyPassword=${{ secrets.KEYSTORE_PASSWORD }}
           EOF
           else
             echo "Generating release keystore for CI release packaging"
-            keytool -genkeypair -v -keystore formpic-release.jks -alias formpic-key -keyalg RSA -keysize 2048 -validity 10000 -storepass ayushgupta -keypass ayushgupta -dname "CN=Ayush Gupta, OU=Development, O=FormPic, L=Chandigarh, ST=Chandigarh, C=IN"
+            keytool -genkeypair -v -keystore validpic-release.jks -alias validpic-key -keyalg RSA -keysize 2048 -validity 10000 -storepass ayushgupta -keypass ayushgupta -dname "CN=Ayush Gupta, OU=Development, O=ValidPic, L=Chandigarh, ST=Chandigarh, C=IN"
             cat <<EOF > keystore.properties
-          storeFile=formpic-release.jks
+          storeFile=validpic-release.jks
           storePassword=ayushgupta
-          keyAlias=formpic-key
+          keyAlias=validpic-key
           keyPassword=ayushgupta
           EOF
           fi
@@ -94,14 +94,14 @@ jobs:
       - name: Upload Release AAB Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: formpic-release-aab
+          name: validpic-release-aab
           path: app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: formpic-release-apk
+          name: validpic-release-apk
           path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
@@ -109,19 +109,20 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.8
-          name: "FormPic v1.0.8 — Official Production Release"
+          name: "ValidPic v1.0.8 — Official Production Release"
           body: |
-            ## FormPic v1.0.8 — Direct Android APK & AAB Release
+            ## ValidPic v1.0.8 — Direct Android APK & AAB Release
             
-            FormPic is a privacy-first, on-device photo resizer, signature processor, and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
+            ValidPic is a privacy-first, on-device photo resizer, signature processor, and background isolation tool designed for Indian passport, exam (SSC, UPSC, IBPS, NEET, RRB), and government portal applications.
             
             ### 📥 Download & Install on Android:
             - **Direct APK (Tap to install on any Android phone)**: [app-release.apk](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.8/app-release.apk)
             - **Google Play / Store Bundle**: [app-release.aab](https://github.com/Ayush4Gupta/FormPic/releases/download/v1.0.8/app-release.aab)
             
             ### What's New in v1.0.8:
+            - 🏛️ **Official Rebrand to ValidPic**: Upgraded brand identity, verified portal compliance, and updated package namespace.
             - 🚀 **Live Google Form & Sheet Feedback Hub**: Silent in-app feedback submissions and exam preset requests now automatically route directly to the official Google Form / Google Sheet in real time.
-            - 📁 **Configurable Photo Save Location**: Interactive Settings dialog to switch where processed photos are saved (`Pictures/FormPic`, `Download/FormPic`, or `DCIM/FormPic`) with 1-tap "Open in Gallery" launcher.
+            - 📁 **Configurable Photo Save Location**: Interactive Settings dialog to switch where processed photos are saved (`Pictures/ValidPic`, `Download/ValidPic`, or `DCIM/ValidPic`) with 1-tap "Open in Gallery" launcher.
             - ✒️ **Dedicated Signature Pipeline**: Face detection and eye checks completely bypassed for signatures with verified green approval badge.
             - 📐 **Passport Size (3.5 × 4.5 cm) Live Framing**: 1-tap toggle between Passport Size and Original Framing directly on the Result screen.
           files: |

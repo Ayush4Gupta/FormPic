@@ -1,12 +1,12 @@
-# Complete Step-by-Step Guide: Google Play Publishing & AdMob Integration for FormPic
+# Complete Step-by-Step Guide: Google Play Publishing & AdMob Integration for ValidPic
 
-This guide walks you through every exact step to set up your Google AdMob advertising, prepare your Google Play Console account, build your production `.aab`, pass Google's latest 12-tester review, and launch **FormPic** to the public.
+This guide walks you through every exact step to set up your Google AdMob advertising, prepare your Google Play Console account, build your production `.aab`, pass Google's latest 12-tester review, and launch **ValidPic** to the public.
 
 ---
 
 ## Table of Contents
 1. [Phase 1: Google AdMob Production Setup](#phase-1-google-admob-production-setup)
-2. [Phase 2: Connecting Real AdMob IDs in FormPic Code](#phase-2-connecting-real-admob-ids-in-formpic-code)
+2. [Phase 2: Connecting Real AdMob IDs in ValidPic Code](#phase-2-connecting-real-admob-ids-in-validpic-code)
 3. [Phase 3: Setting Up Free `app-ads.txt` (Crucial for Ad Revenue)](#phase-3-setting-up-free-app-adstxt-crucial-for-ad-revenue)
 4. [Phase 4: Hosting Your Privacy Policy for Free (2 Minutes)](#phase-4-hosting-your-privacy-policy-for-free-2-minutes)
 5. [Phase 5: Google Play Console Account Setup](#phase-5-google-play-console-account-setup)
@@ -23,16 +23,16 @@ This guide walks you through every exact step to set up your Google AdMob advert
 2. Sign in with your primary Google Account (preferably the same Google account you use for Google Play Console).
 3. Complete account registration and add your payment address / bank details.
 
-### 2. Add FormPic to AdMob
+### 2. Add ValidPic to AdMob
 1. In the AdMob sidebar, click **Apps** ➔ **Add App**.
 2. Platform: **Android**.
 3. Is the app listed on a supported app store?: Select **No** (since we haven't published it yet).
-4. App name: **FormPic**.
+4. App name: **ValidPic**.
 5. Click **Add App**.
 6. AdMob will generate your unique **AdMob App ID** (format: `ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX`). **Copy and save this ID**.
 
 ### 3. Create the Interstitial Ad Unit
-1. Inside your new FormPic app dashboard in AdMob, click **Ad units** ➔ **Add ad unit**.
+1. Inside your new ValidPic app dashboard in AdMob, click **Ad units** ➔ **Add ad unit**.
 2. Select **Interstitial**.
 3. Ad unit name: `Download_Interstitial`.
 4. Advanced settings:
@@ -42,9 +42,9 @@ This guide walks you through every exact step to set up your Google AdMob advert
 
 ---
 
-## Phase 2: Connecting Real AdMob IDs in FormPic Code
+## Phase 2: Connecting Real AdMob IDs in ValidPic Code
 
-Currently, FormPic is configured with Google's official sample test IDs so the app never crashes during development. When you are ready for release, update these two files:
+Currently, ValidPic is configured with Google's official sample test IDs so the app never crashes during development. When you are ready for release, update these two files:
 
 ### 1. In `app/build.gradle.kts`
 Change line 23:
@@ -53,7 +53,7 @@ Change line 23:
 manifestPlaceholders["admobAppId"] = "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
 ```
 
-### 2. In `app/src/main/java/com/formpic/app/ads/AdManager.kt`
+### 2. In `app/src/main/java/com/validpic/app/ads/AdManager.kt`
 Update the Ad Unit ID on line 19:
 ```kotlin
 // Change from test ID to your real Interstitial Ad Unit ID:
@@ -90,7 +90,7 @@ Google Play **strictly rejects** apps without a live, publicly accessible HTTPS 
 We have already created the complete, policy-compliant text in [`docs/PRIVACY_POLICY.md`](file:///c:/Users/ritik/Downloads/pic_app/docs/PRIVACY_POLICY.md).
 
 ### Quick Free Hosting Options:
-- **Option A (GitHub Pages):** Place `PRIVACY_POLICY.md` in your GitHub repository and enable GitHub Pages or GitHub README link: `https://yourusername.github.io/formpic/privacy-policy`.
+- **Option A (GitHub Pages):** Place `PRIVACY_POLICY.md` in your GitHub repository and enable GitHub Pages or GitHub README link: `https://yourusername.github.io/validpic/privacy-policy`.
 - **Option B (Google Sites):** Create a free one-page site at [sites.google.com](https://sites.google.com), paste the text from `docs/PRIVACY_POLICY.md`, and click **Publish**.
 - **Option C (Notion / Vercel):** Create a public Notion page with the privacy policy and copy the web link.
 
@@ -115,16 +115,16 @@ Google Play requires all new apps to be submitted as an **Android App Bundle (`.
 Run this command in PowerShell inside `c:\Users\ritik\Downloads\pic_app`:
 
 ```powershell
-keytool -genkeypair -v -keystore formpic-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias formpic-key
+keytool -genkeypair -v -keystore validpic-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias validpic-key
 ```
 You will be prompted to enter a password and your name/organization. Remember this password!
 
 ### 2. Create `keystore.properties`
 Create a file named `keystore.properties` in your root folder:
 ```properties
-storeFile=../formpic-release.jks
+storeFile=../validpic-release.jks
 storePassword=YOUR_STORE_PASSWORD
-keyAlias=formpic-key
+keyAlias=validpic-key
 keyPassword=YOUR_KEY_PASSWORD
 ```
 
@@ -141,7 +141,7 @@ Your release file will be created at:
 ## Phase 7: Google Play Console App Setup & Form Declarations
 
 In Google Play Console, click **Create app**:
-- **App name:** `FormPic: Passport & Exam Photo`
+- **App name:** `ValidPic: Passport & Exam Photo`
 - **Default language:** English (United States) or English (India)
 - **App or game:** App
 - **Free or paid:** Free

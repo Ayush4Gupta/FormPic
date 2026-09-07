@@ -1,7 +1,7 @@
 <resources>
     <!-- App Details -->
-    <string name="app_name">FormPic</string>
-    <string name="app_tagline">Application-ready passport photos in seconds</string>
+    <string name="app_name">ValidPic</string>
+    <string name="app_tagline">Guaranteed portal-valid passport &amp; exam photos in seconds</string>
 
     <!-- General & Navigation -->
     <string name="back">Back</string>
@@ -101,36 +101,36 @@
     <string name="pref_clear_cache">Clear Temporary Image Cache</string>
     <string name="pref_clear_cache_desc">Frees up temporary storage used during processing</string>
     <string name="cache_cleared_msg">Cache cleared successfully</string>
-    <string name="about_title">About FormPic</string>
+    <string name="about_title">About ValidPic</string>
     <string name="about_version">Version 1.0.0 (Production Build)</string>
-    <string name="about_desc">FormPic is an offline-first tool designed to help Indian citizens and students generate compliant passport and exam application photos instantly.</string>
-    <string name="rate_app">Rate FormPic on Google Play</string>
+    <string name="about_desc">ValidPic is an offline-first tool designed to help Indian citizens and students generate compliant passport and exam application photos instantly.</string>
+    <string name="rate_app">Rate ValidPic on Google Play</string>
     <string name="contact_feedback">Send Feedback</string>
 
     <!-- Help & FAQ Screen -->
     <string name="faq_title">Frequently Asked Questions</string>
 
     <string name="faq_q1">Why do exam portals reject photos larger than 50 KB?</string>
-    <string name="faq_a1">Most Indian government exam servers (like SSC, IBPS, UPSC, Railway) set strict file size limits between 20 KB and 50 KB. If a file is even 50.1 KB, the upload server rejects it. FormPic guarantees your final file size stays strictly below the selected limit.</string>
+    <string name="faq_a1">Most Indian government exam servers (like SSC, IBPS, UPSC, Railway) set strict file size limits between 20 KB and 50 KB. If a file is even 50.1 KB, the upload server rejects it. ValidPic guarantees your final file size stays strictly below the selected limit.</string>
 
-    <string name="faq_q2">Does FormPic upload my personal photos to the internet?</string>
+    <string name="faq_q2">Does ValidPic upload my personal photos to the internet?</string>
     <string name="faq_a2">No. 100% of face detection, background isolation, cropping, and compression runs on your device using on-device ML Kit models. Your personal photos never leave your phone.</string>
 
     <string name="faq_q3">How do I get the cleanest white background?</string>
     <string name="faq_a3">Stand in front of a plain wall with uniform lighting on your face. Avoid harsh backlighting or deep shadows behind your head. If any edge needs fine-tuning, use our built-in Touch Up brush.</string>
 
     <string name="faq_q4">Where is the downloaded photo saved?</string>
-    <string name="faq_a4">The photo is saved directly into your device Gallery / Photos under the "Pictures/FormPic" folder, ready to be attached to any online form.</string>
+    <string name="faq_a4">The photo is saved directly into your device Gallery / Photos under the "Pictures/ValidPic" folder, ready to be attached to any online form.</string>
 
     <string name="faq_q5">Why does a 25 KB or 50 KB photo look slightly softer?</string>
-    <string name="faq_a5">25 KB is an extremely small digital file. FormPic uses an intelligent binary-search algorithm to pack maximum possible detail and clarity into the tiny size allowed by government portals.</string>
+    <string name="faq_a5">25 KB is an extremely small digital file. ValidPic uses an intelligent binary-search algorithm to pack maximum possible detail and clarity into the tiny size allowed by government portals.</string>
 
     <string name="faq_q6">Why was an advertisement displayed before download?</string>
-    <string name="faq_a6">FormPic is 100% free with no watermark. A single polite ad supports our ongoing development and serverless on-device model updates. If an ad fails or you are offline, your download will still proceed immediately.</string>
+    <string name="faq_a6">ValidPic is 100% free with no watermark. A single polite ad supports our ongoing development and serverless on-device model updates. If an ad fails or you are offline, your download will still proceed immediately.</string>
 
     <!-- In-App Feedback System -->
     <string name="feedback_dialog_title">Send Feedback</string>
-    <string name="feedback_dialog_subtitle">Help us improve FormPic or request an official exam preset</string>
+    <string name="feedback_dialog_subtitle">Help us improve ValidPic or request an official exam preset</string>
     <string name="feedback_category_exam_preset">Request Exam</string>
     <string name="feedback_category_portal_issue">Report Issue</string>
     <string name="feedback_category_feature">Suggest Feature</string>

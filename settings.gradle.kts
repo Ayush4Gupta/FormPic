@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FormPic"
+rootProject.name = "ValidPic"
 include(":core")
 include(":app")

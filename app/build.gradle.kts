@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.formpic.app"
+    namespace = "com.validpic.app"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.formpic.app"
+        applicationId = "com.validpic.app"
         minSdk = 24
         targetSdk = 34
         versionCode = 9
@@ -37,9 +37,9 @@ android {
     signingConfigs {
         create("release") {
             if (hasReleaseKeystore) {
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile") ?: "formpic-release.jks")
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile") ?: "validpic-release.jks")
                 storePassword = keystoreProperties.getProperty("storePassword")
-                keyAlias = keystoreProperties.getProperty("keyAlias") ?: "formpic-key"
+                keyAlias = keystoreProperties.getProperty("keyAlias") ?: "validpic-key"
                 keyPassword = keystoreProperties.getProperty("keyPassword")
             }
         }

@@ -1,4 +1,4 @@
-# FormPic — Google Play Console Data Safety Form Guide
+# ValidPic — Google Play Console Data Safety Form Guide
 
 Use this reference to complete the **Data Safety** section in Google Play Console.
 

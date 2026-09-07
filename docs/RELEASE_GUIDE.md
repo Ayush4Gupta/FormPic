@@ -1,4 +1,4 @@
-# FormPic — Release & Signing Guide
+# ValidPic — Release & Signing Guide
 
 Follow these steps to produce an optimized, signed Android App Bundle (`.aab`) ready for upload to Google Play Console.
 
@@ -10,14 +10,14 @@ Run the following command in your terminal to generate your production release k
 
 ```bash
 keytool -genkeypair -v \
-  -keystore formpic-release.jks \
+  -keystore validpic-release.jks \
   -keyalg RSA \
   -keysize 2048 \
   -validity 10000 \
-  -alias formpic-key
+  -alias validpic-key
 ```
 
-*Keep `formpic-release.jks` and your keystore passwords in a safe password manager. Never commit them to Git.*
+*Keep `validpic-release.jks` and your keystore passwords in a safe password manager. Never commit them to Git.*
 
 ---
 
@@ -26,9 +26,9 @@ keytool -genkeypair -v \
 Create a `keystore.properties` file in your root project directory (this file is git-ignored):
 
 ```properties
-storeFile=../formpic-release.jks
+storeFile=../validpic-release.jks
 storePassword=YOUR_KEYSTORE_PASSWORD
-keyAlias=formpic-key
+keyAlias=validpic-key
 keyPassword=YOUR_KEY_PASSWORD
 ```
 
@@ -60,7 +60,7 @@ Before publishing, replace the test AdMob IDs in:
    ```kotlin
    manifestPlaceholders["admobAppId"] = "ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX"
    ```
-2. `app/src/main/java/com/formpic/app/ads/AdManager.kt`:
+2. `app/src/main/java/com/validpic/app/ads/AdManager.kt`:
    ```kotlin
    private const val PROD_INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-XXXXXXXXXXXXXXXX/XXXXXXXXXX"
    ```
@@ -87,7 +87,7 @@ The output bundle will be located at:
 ## 5. Google Play Console Upload & Rollout Steps
 
 1. Log in to [Google Play Console](https://play.google.com/console).
-2. Select or create the app: **FormPic: Passport & Exam Photo**.
+2. Select or create the app: **ValidPic: Passport & Exam Photo**.
 3. Complete the **Set up your app** tasks:
    - Privacy policy link: URL pointing to your hosted `PRIVACY_POLICY.md`.
    - App access: All functionality is available without special access.
@@ -95,12 +95,12 @@ The output bundle will be located at:
    - Content rating: Complete the questionnaire (Rating: Everyone / 3+).
    - Target audience: 13+.
    - Data safety: Complete according to `docs/DATA_SAFETY.md`.
-   - Government apps: Select "No" (FormPic is a third-party helper utility, not an official government app).
+   - Government apps: Select "No" (ValidPic is a third-party helper utility, not an official government app).
 4. Go to **Release > Testing > Internal testing** or **Closed testing**.
 5. Create a new release and upload `app-release.aab`.
 6. Enter release notes:
    ```text
-   Initial production release of FormPic.
+   Initial production release of ValidPic.
    • 1-tap exact KB compression (Under 25 KB, Under 50 KB, Under 75 KB, Under 100 KB)
    • Automatic on-device clean white background isolation
    • Pre-configured presets for Indian Passport, SSC, UPSC, IBPS, NEET & PAN
