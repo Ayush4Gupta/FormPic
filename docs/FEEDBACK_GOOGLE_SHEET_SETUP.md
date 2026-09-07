@@ -1,6 +1,13 @@
-# 📊 Connecting FormPic In-App Feedback Directly to Your Google Sheet
+# 📊 FormPic In-App Feedback Hub (Connected to Google Forms & Sheets)
 
-FormPic v1.0.6+ features silent, in-app feedback submission. Candidates can request new exam presets (e.g. State PSCs, Police, SSC, IBPS, Universities) or report portal issues with a single tap—**without ever leaving the app or opening Gmail**.
+> [!NOTE]
+> **Live Form Endpoint Configured in v1.0.8**:
+> - Form Response URL: `https://docs.google.com/forms/d/e/1FAIpQLSdIuQexxVY2USXe7bNNOXYUxCtDQe0nXmZV30qY6hmn5anoWA/formResponse`
+> - Verified Status: **HTTP 200 OK** (Live on-device submissions route directly to your Google Form)
+> - To view responses in Google Sheets: Open your Google Form -> click **Responses** -> click **Link to Sheets**.
+> - To receive instant emails: In Google Sheets -> click **Tools** -> **Notification settings** -> **Edit notifications** -> select *“A user submits a form”* + *“Email right away”*.
+
+FormPic features silent, in-app feedback submission. Candidates can request new exam presets (e.g. State PSCs, Police, SSC, IBPS, Universities) or report portal issues with a single tap—**without ever leaving the app or opening Gmail**.
 
 ---
 

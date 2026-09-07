@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.formpic.app.BuildConfig
 import com.formpic.app.R
 import com.formpic.app.data.repository.FeedbackManager
 import com.formpic.app.data.repository.FeedbackSubmitResult
@@ -101,8 +102,8 @@ fun FeedbackDialog(
     var dialogState by remember { mutableStateOf(FeedbackDialogState.INPUT) }
     var failureReason by remember { mutableStateOf("") }
 
-    val appVersionName = "1.0.7"
-    val appVersionCode = 8
+    val appVersionName = BuildConfig.VERSION_NAME
+    val appVersionCode = BuildConfig.VERSION_CODE
 
     val fullFeedbackBody = remember(selectedCategory, contactEmail, messageText) {
         buildString {

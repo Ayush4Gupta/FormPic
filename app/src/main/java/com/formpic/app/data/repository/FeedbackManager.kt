@@ -23,16 +23,13 @@ sealed class FeedbackSubmitResult {
 object FeedbackManager {
     private const val TAG = "FeedbackManager"
 
-    // Default Google Form / Google Apps Script endpoint
-    // To route to your own Google Sheet:
-    // 1. Create a Google Form or deploy a 4-line Google Apps Script on your Sheet
-    // 2. Paste the formResponse or exec URL here
-    var submissionUrl: String = "https://docs.google.com/forms/d/e/1FAIpQLScFormPicFeedback_sample/formResponse"
+    // Live Google Form / Google Sheets response endpoint
+    var submissionUrl: String = "https://docs.google.com/forms/d/e/1FAIpQLSdIuQexxVY2USXe7bNNOXYUxCtDQe0nXmZV30qY6hmn5anoWA/formResponse"
 
-    var entryCategory: String = "entry.1000001"
-    var entryMessage: String = "entry.1000002"
-    var entryEmail: String = "entry.1000003"
-    var entryDevice: String = "entry.1000004"
+    var entryCategory: String = "entry.1081928115"
+    var entryMessage: String = "entry.612139181"
+    var entryEmail: String = "entry.1561738174"
+    var entryDevice: String = "entry.904739002"
 
     suspend fun submitFeedback(
         category: String,
