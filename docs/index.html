@@ -6,18 +6,29 @@
   
   <!-- Primary SEO Metadata (Targeting Indian Exam Keywords) -->
   <title>ValidPic — Online Photo & Signature Resizer (Under 20 KB, 50 KB, 100 KB)</title>
-  <meta name="description" content="Free online passport size photo resizer and signature compressor for Indian exams (SSC, UPSC, IBPS, NEET, Railway, State PSCs). 100% on-device privacy with zero server uploads.">
+  <meta name="description" content="Free online passport size photo resizer and signature compressor for Indian exams (SSC, UPSC, IBPS, NEET, Railway). 100% on-device privacy with zero server uploads.">
   <meta name="keywords" content="photo to 50 kb, ssc photo resizer, upsc photo resize 50 kb, signature resize 20 kb, passport photo maker online white background, reduce photo size in kb, validpic">
   <meta name="author" content="ValidPic">
   <link rel="canonical" href="https://ayush4gupta.github.io/ValidPic/">
+
+  <!-- Favicon (Official ValidPic App Icon) -->
+  <link rel="icon" type="image/png" href="assets/app_icon_512.png">
+  <link rel="apple-touch-icon" href="assets/app_icon_512.png">
 
   <!-- Open Graph / Social Media -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="ValidPic — Online Photo & Signature Resizer for Govt Exams">
   <meta property="og:description" content="Guaranteed under 50 KB / 20 KB passport photos & signatures with clean white background. 100% private in-browser tool.">
   <meta property="og:url" content="https://ayush4gupta.github.io/ValidPic/">
+  <meta property="og:image" content="https://ayush4gupta.github.io/ValidPic/assets/playstore_feature_graphic.jpg">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ValidPic — Online Photo & Signature Resizer">
+  <meta name="twitter:description" content="Compress exam photos under 50 KB & signatures under 20 KB instantly in your browser.">
+  <meta name="twitter:image" content="https://ayush4gupta.github.io/ValidPic/assets/playstore_feature_graphic.jpg">
   
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -56,204 +67,298 @@
 </head>
 <body>
 
-  <!-- Site Header -->
+  <!-- Site Navigation Header -->
   <header class="site-header">
     <div class="header-container">
-      <a href="./" class="brand-logo">
-        <div class="logo-icon">📸</div>
-        <div>
+      <a href="./" class="brand-logo" aria-label="ValidPic Home">
+        <img src="assets/app_icon_512.png" alt="ValidPic Official Icon" class="brand-logo-img">
+        <div class="brand-text">
           <span class="brand-name">ValidPic</span>
-          <span class="brand-badge">WEB EDITION</span>
+          <span class="brand-badge">WEB &amp; APP</span>
         </div>
       </a>
+      
       <div class="header-actions">
-        <a href="https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.8/app-release.apk" class="btn-apk-download" title="Install Android App">
-          <span>📱</span>
-          <span>Download Android App</span>
+        <a href="https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.8/app-release.apk" class="btn-apk-header" title="Download ValidPic Android APK">
+          <span class="btn-icon">📱</span>
+          <span class="btn-text">Get Android App</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- TOP AD BANNER SLOT (Desktop 728x90 / Mobile 320x50 Responsive) -->
-  <div class="ad-slot-container" id="top-ad-banner">
-    <div class="ad-placeholder">
-      <span class="ad-tag">Advertisement</span>
-      <span>📢 High-Intent Ad Space (Google AdSense / Monetag Responsive Leaderboard)</span>
+  <!-- Top Ad Placement Container -->
+  <div class="ad-slot-wrap" id="top-ad-banner">
+    <div class="ad-banner-box">
+      <span class="ad-pill">SPONSORED</span>
+      <span class="ad-text">High-Speed Cloud Storage &amp; Govt Job Prep Resources (Ad Space)</span>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <main class="main-content">
+  <!-- Main Application Container -->
+  <main class="main-wrapper">
 
-    <!-- Hero Title -->
-    <section class="hero-section">
-      <h1>Online Passport &amp; Exam Photo Resizer</h1>
-      <p>Compress photos &amp; signatures strictly under <strong>20 KB, 50 KB, or 100 KB</strong> with guaranteed acceptance on SSC, UPSC, IBPS, NEET &amp; government portals.</p>
+    <!-- Hero Header -->
+    <section class="hero-block">
+      <div class="privacy-pill">
+        <span class="shield-icon">🔒</span>
+        <span>100% Private In-Browser AI • Photos Never Uploaded to Any Server</span>
+      </div>
+      <h1 class="hero-title">Online Passport &amp; Exam Photo Resizer</h1>
+      <p class="hero-subtitle">
+        Compress photos and signatures strictly under <strong>20 KB, 50 KB, or 100 KB</strong>. Guaranteed acceptance on SSC, UPSC, IBPS, NEET &amp; state government exam portals.
+      </p>
+    </section>
+
+    <!-- Unified Converter Card -->
+    <div class="converter-card" id="converter-card">
       
-      <div class="trust-pills">
-        <div class="pill-item">🔒 100% Private (Zero Cloud Uploads)</div>
-        <div class="pill-item">⚡ Instant In-Browser Processing</div>
-        <div class="pill-item">🎯 Binary Exact KB Guarantee</div>
-        <div class="pill-item">📐 3.5 × 4.5 cm Passport Crop</div>
+      <!-- Mode Tabs (Segmented Control) -->
+      <div class="mode-tabs-bar" role="tablist">
+        <button type="button" class="mode-tab active" id="tab-passport" role="tab" aria-selected="true">
+          <span class="tab-emoji">📸</span>
+          <span class="tab-label">Passport Photo</span>
+          <span class="tab-hint">50 KB • 3.5×4.5 cm</span>
+        </button>
+        <button type="button" class="mode-tab" id="tab-signature" role="tab" aria-selected="false">
+          <span class="tab-emoji">✍️</span>
+          <span class="tab-label">Official Signature</span>
+          <span class="tab-hint">20 KB • Clean Ink</span>
+        </button>
+        <button type="button" class="mode-tab" id="tab-custom" role="tab" aria-selected="false">
+          <span class="tab-emoji">📄</span>
+          <span class="tab-label">Document / Custom</span>
+          <span class="tab-hint">100–200 KB</span>
+        </button>
+      </div>
+
+      <!-- Stage 1: Upload Dropzone (Visible when no image is loaded) -->
+      <div class="upload-stage" id="upload-stage">
+        <div class="dropzone-box" id="dropzone">
+          <div class="dropzone-art">
+            <div class="upload-circle">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="dropzone-heading">Choose a photo or drag it here</div>
+          <div class="dropzone-formats">Supports JPG, PNG, WebP, iPhone HEIC &amp; Screenshots</div>
+          
+          <button type="button" class="btn-select-file" id="select-file-btn">
+            <span>Browse Files</span>
+          </button>
+          
+          <div class="dropzone-divider"><span>or test immediately</span></div>
+          
+          <button type="button" class="btn-sample" id="try-sample-btn">
+            <span>🪄 Try Sample Passport Photo</span>
+          </button>
+          
+          <input type="file" id="file-input" accept="image/*" style="display: none;">
+        </div>
+      </div>
+
+      <!-- Stage 2: Result & Studio Editor (Appears seamlessly when image is loaded) -->
+      <div class="editor-stage" id="editor-stage" style="display: none;">
+        
+        <!-- Live Verification Badge (Identical to Android App) -->
+        <div class="verification-badge-container">
+          <div class="verification-pill" id="verification-pill">
+            <span class="check-icon">✓</span>
+            <span id="verification-text">46.8 KB (Guaranteed under 50 KB ✓) • 350 × 450 px</span>
+          </div>
+        </div>
+
+        <!-- Preview Display Frame -->
+        <div class="preview-center-wrap">
+          <div class="photo-frame-card" id="photo-frame">
+            <canvas id="result-canvas"></canvas>
+          </div>
+          <div class="orig-info-tag" id="orig-info-tag">Original: 1200 × 1600 px • 2.4 MB</div>
+        </div>
+
+        <!-- Target KB Selector Chips -->
+        <div class="control-section">
+          <label class="control-label">Target File Size:</label>
+          <div class="kb-chips-row">
+            <button type="button" class="kb-chip" data-kb="20">Under 20 KB</button>
+            <button type="button" class="kb-chip active" data-kb="50">Under 50 KB</button>
+            <button type="button" class="kb-chip" data-kb="100">Under 100 KB</button>
+            <button type="button" class="kb-chip" data-kb="200">Under 200 KB</button>
+            <button type="button" class="kb-chip" id="chip-custom-kb" data-kb="custom">Custom KB...</button>
+          </div>
+
+          <!-- Custom KB Slider Input (Hidden by default, shown when Custom is selected) -->
+          <div class="custom-kb-slider-box" id="custom-kb-slider-box" style="display: none;">
+            <div class="slider-row">
+              <span class="slider-val-label">Target KB: <strong id="custom-kb-val">75 KB</strong></span>
+              <input type="range" id="custom-kb-range" min="10" max="500" step="5" value="75">
+            </div>
+          </div>
+        </div>
+
+        <!-- Enhancements Toggles (Mirroring Android App Switches) -->
+        <div class="toggles-card">
+          <div class="toggle-item">
+            <div class="toggle-meta">
+              <span class="toggle-title">Pure White Background</span>
+              <span class="toggle-desc">Boost contrast &amp; cleans gray/shadowy paper</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-white-bg" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <div class="toggle-item">
+            <div class="toggle-meta">
+              <span class="toggle-title">Passport Size Ratio (3.5 × 4.5 cm)</span>
+              <span class="toggle-desc">Center-crops to official MEA / SSC portrait standard</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggle-passport-ratio" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="actions-group">
+          <button type="button" class="btn-primary-download" id="download-btn">
+            <span class="btn-dl-icon">📥</span>
+            <span id="download-btn-text">Download Ready Photo (.jpg)</span>
+          </button>
+          <button type="button" class="btn-secondary-reset" id="reset-btn">
+            <span>🔄 Upload Another Image</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Official Exam Presets Drawer -->
+    <section class="presets-section">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title">Official Exam Specifications</h2>
+          <p class="section-desc">Tap any exam to instantly apply its official portal dimensions and file-size limits.</p>
+        </div>
+        <div class="search-input-wrap">
+          <input type="text" id="preset-search" class="search-field" placeholder="🔍 Search exam (SSC, UPSC, IBPS, NEET)...">
+        </div>
+      </div>
+
+      <div class="presets-grid" id="presets-list">
+        <!-- Rendered dynamically by app.js -->
       </div>
     </section>
 
-    <!-- Workspace Grid -->
-    <div class="app-workspace">
-      
-      <!-- Left Column: Search & Exam Presets -->
-      <aside class="controls-sidebar">
-        <div class="section-title">
-          <span>1. Select Requirement</span>
-        </div>
-
-        <!-- Quick KB Target Buttons -->
-        <div class="quick-kb-row">
-          <button type="button" class="kb-btn" data-kb="20">20 KB</button>
-          <button type="button" class="kb-btn active" data-kb="50">50 KB</button>
-          <button type="button" class="kb-btn" data-kb="100">100 KB</button>
-          <button type="button" class="kb-btn" data-kb="200">200 KB</button>
-        </div>
-
-        <!-- Real-Time Search Box -->
-        <input type="text" id="preset-search" class="search-box" placeholder="🔍 Search exam (SSC, UPSC, IBPS, Passport)..." aria-label="Search Exam Preset">
-
-        <!-- Presets List Container (Populated by app.js) -->
-        <div class="presets-list" id="presets-list"></div>
-      </aside>
-
-      <!-- Right Column: Interactive Upload & Canvas Editor -->
-      <section class="editor-panel">
-        
-        <!-- Upload Dropzone (Visible initially) -->
-        <div class="dropzone" id="dropzone">
-          <div class="dropzone-icon">📁</div>
-          <div class="dropzone-title">Drop your photo or signature here</div>
-          <div class="dropzone-subtitle">Supports JPG, PNG, WebP, HEIC (iPhone) &amp; Screenshots</div>
-          <button type="button" class="dropzone-sample-btn" id="try-sample-btn">🪄 Try Sample Passport Photo</button>
-          <input type="file" id="file-input" accept="image/*" style="display: none;">
-        </div>
-
-        <!-- Result / Processing Stage (Hidden until image loaded) -->
-        <div class="result-stage" id="result-stage">
-          
-          <!-- Options Bar: Framing & White Background -->
-          <div class="editor-options">
-            <div class="option-group">
-              <span style="font-size: 12px; font-weight: 700; color: var(--slate-text);">Framing:</span>
-              <div class="toggle-switch" id="toggle-framing">
-                <span class="toggle-opt active" id="opt-passport">📐 3.5×4.5 cm</span>
-                <span class="toggle-opt" id="opt-original">🖼️ Original</span>
-              </div>
-            </div>
-
-            <div class="option-group">
-              <span style="font-size: 12px; font-weight: 700; color: var(--slate-text);">Studio Look:</span>
-              <div class="toggle-switch" id="toggle-bg">
-                <span class="toggle-opt active" id="opt-white-bg">✨ White Boost</span>
-                <span class="toggle-opt" id="opt-orig-bg">Original</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Dual Preview Grid -->
-          <div class="preview-grid">
-            <div class="preview-box">
-              <div class="preview-label">Original Upload</div>
-              <div class="preview-img-container">
-                <canvas id="orig-canvas"></canvas>
-              </div>
-              <div class="preview-meta" id="orig-meta">Original: 0 × 0 px • 0 KB</div>
-            </div>
-
-            <div class="preview-box" style="border-color: #BFDBFE; background: #EFF6FF;">
-              <div class="preview-label" style="color: var(--blue-accent);">ValidPic Processed Result</div>
-              <div class="preview-img-container">
-                <canvas id="result-canvas"></canvas>
-              </div>
-              <div class="preview-meta" id="result-meta">Output: 350 × 450 px • 45.2 KB</div>
-            </div>
-          </div>
-
-          <!-- Download Action Bar -->
-          <div class="download-action-bar">
-            <button type="button" class="btn-download-main" id="download-btn">
-              <span>📥 Download Ready Photo (.jpg)</span>
-            </button>
-            <button type="button" class="btn-reset" id="reset-btn">Upload a Different Photo</button>
-          </div>
-
-        </div>
-
-      </section>
-
-    </div>
-
-    <!-- MID-CONTENT AD BANNER (High Impression In-Tool Slot) -->
-    <div class="ad-slot-container" id="mid-content-ad" style="margin-top: 36px;">
-      <div class="ad-placeholder">
-        <span class="ad-tag">Sponsored</span>
-        <span>📢 Mid-Content Display Ad Space (Google AdSense 728x90 or Native In-Article)</span>
+    <!-- Mid-Content Ad Unit -->
+    <div class="ad-slot-wrap" id="mid-content-ad">
+      <div class="ad-banner-box">
+        <span class="ad-pill">ADVERTISEMENT</span>
+        <span class="ad-text">Official Notification Alerts &amp; Free Study Materials (Ad Space)</span>
       </div>
     </div>
+
+    <!-- Android App Promotion Card -->
+    <section class="app-promo-card">
+      <div class="promo-content">
+        <img src="assets/app_icon_512.png" alt="ValidPic App Icon" class="promo-app-icon">
+        <div class="promo-text">
+          <h3 class="promo-title">Prefer Resizing Offline on Your Phone?</h3>
+          <p class="promo-desc">
+            Download the official <strong>ValidPic Android App</strong>. Works 100% offline, takes live camera photos with passport guide framing, and compresses signatures with zero data usage.
+          </p>
+          <div class="promo-features">
+            <span>⚡ Zero Internet Required</span>
+            <span>📷 Live Camera Passport Guide</span>
+            <span>🔒 100% Private</span>
+          </div>
+        </div>
+      </div>
+      <div class="promo-action">
+        <a href="https://github.com/Ayush4Gupta/ValidPic/releases/download/v1.0.8/app-release.apk" class="btn-promo-apk">
+          <span>📲 Download ValidPic APK (v1.0.8)</span>
+        </a>
+      </div>
+    </section>
 
     <!-- High-Value SEO & FAQ Section -->
-    <section class="seo-section">
-      <h2 style="font-size: 22px; font-weight: 800; color: var(--navy-deep); text-align: center; margin-bottom: 20px;">
-        Frequently Asked Questions
-      </h2>
+    <section class="faq-section">
+      <h2 class="faq-main-title">Frequently Asked Questions</h2>
 
-      <div class="faq-card">
-        <h3>Why do SSC, UPSC, and IBPS reject photos larger than 50 KB?</h3>
-        <p>Government examination servers receive millions of applications within short deadlines. To maintain server uptime, their portals enforce hard file-size limits (typically strictly between 20 KB and 50 KB). If an uploaded image is even 50.1 KB, the upload parser automatically rejects it. ValidPic's binary search compression engine guarantees your file remains strictly under the required threshold.</p>
-      </div>
+      <div class="faq-list">
+        <details class="faq-item" open>
+          <summary class="faq-question">Why do SSC, UPSC, and IBPS reject photos larger than 50 KB?</summary>
+          <div class="faq-answer">
+            <p>Government examination portals (like SSC CGL/CHSL, UPSC CSE, and IBPS Bank PO) process tens of millions of candidate applications within tight deadlines. To prevent server crashes and maintain fast loading, their automated upload engines enforce strict file-size limits (typically strictly between 20 KB and 50 KB). If an image is 50.1 KB, the upload gateway automatically rejects it. ValidPic uses binary search compression to ensure your final image is strictly under the required threshold while preserving maximum facial sharpness.</p>
+          </div>
+        </details>
 
-      <div class="faq-card">
-        <h3>Are my personal photos uploaded to any server?</h3>
-        <p><strong>Never. 100% of image processing runs client-side in your web browser.</strong> Unlike other online resizers that upload your sensitive ID photos to remote cloud servers, ValidPic uses HTML5 Canvas APIs on your computer or phone CPU. Zero bytes are uploaded to the internet.</p>
-      </div>
+        <details class="faq-item">
+          <summary class="faq-question">Are my sensitive ID photos uploaded to any server?</summary>
+          <div class="faq-answer">
+            <p><strong>Never. 100% of processing occurs directly inside your browser.</strong> Unlike other online compressors that send your photos to remote cloud servers, ValidPic executes entirely via local HTML5 Canvas APIs on your phone or computer. Zero bytes of your photos are ever uploaded or stored anywhere.</p>
+          </div>
+        </details>
 
-      <div class="faq-card">
-        <h3>How do I compress my signature to under 20 KB?</h3>
-        <p>Select the <strong>"Official Signature"</strong> preset from the list or tap the <strong>20 KB</strong> quick button. Upload a photo or scan of your signature on white paper. ValidPic enhances the black/blue ink contrast and compresses the image to between 10 KB and 20 KB in compliant JPEG format.</p>
-      </div>
+        <details class="faq-item">
+          <summary class="faq-question">How do I resize my signature to under 20 KB?</summary>
+          <div class="faq-answer">
+            <p>Click on the <strong>"Official Signature"</strong> tab or tap the <strong>Under 20 KB</strong> chip. Upload a photo or scan of your signature on white paper. ValidPic automatically enhances the ink contrast, eliminates paper shadows, and compresses the signature into an application-compliant JPEG between 10 KB and 20 KB.</p>
+          </div>
+        </details>
 
-      <div class="faq-card">
-        <h3>Does ValidPic support iPhone photos and screenshots?</h3>
-        <p>Yes. ValidPic accepts photos clicked on iPhones, Android phones, digital cameras, flatbed scanners, and mobile screenshots (JPG, PNG, WebP, HEIC). It automatically formats and exports a standard, application-ready <code>.jpg</code> file.</p>
+        <details class="faq-item">
+          <summary class="faq-question">Does ValidPic support iPhone photos and mobile screenshots?</summary>
+          <div class="faq-answer">
+            <p>Yes. ValidPic seamlessly converts images taken with iPhones (HEIC), Android cameras, digital cameras, scanners, and mobile screenshots into standard, exam-ready <code>.jpg</code> files.</p>
+          </div>
+        </details>
       </div>
     </section>
 
   </main>
 
-  <!-- Download Interstitial / Vignette Ad Modal Simulator -->
-  <div id="download-ad-modal" style="display: none; position: fixed; inset: 0; background: rgba(7, 23, 42, 0.75); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: #FFFFFF; border-radius: 16px; padding: 28px; max-width: 440px; width: 90%; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-      <div style="font-size: 36px; margin-bottom: 8px;">⏳</div>
-      <h3 style="font-size: 18px; font-weight: 800; color: #0A2540; margin-bottom: 6px;">Preparing Your Download...</h3>
-      <p style="font-size: 13px; color: #64748B; margin-bottom: 18px;">Your file is verified under target KB and ready for exam portal upload.</p>
+  <!-- Download Interstitial Modal (Monetization Vignette) -->
+  <div id="download-ad-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-spinner">⏳</div>
+      <h3 class="modal-title">Preparing Your Verified Image...</h3>
+      <p class="modal-subtitle">Your file has been verified and compressed under your target file size.</p>
       
-      <!-- Vignette Ad Unit Slot -->
-      <div style="background: #F8FAFC; border: 1px dashed #CBD5E1; border-radius: 8px; padding: 20px; font-size: 12px; color: #64748B; margin-bottom: 16px;">
-        <span style="background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700;">AD REVENUE SLOT</span>
-        <div style="margin-top: 6px;">Google AdSense High-Paying Vignette / Interstitial Unit</div>
+      <!-- Interstitial Ad Unit Slot -->
+      <div class="modal-ad-slot">
+        <span class="ad-pill">SPONSORED</span>
+        <div class="modal-ad-info">Google AdSense / Monetag Interstitial Ad Unit</div>
       </div>
 
-      <div style="font-size: 11px; color: #94A3B8;">Starting download automatically in 1 second...</div>
+      <div class="modal-footer-status">Download will begin automatically in 1 second...</div>
     </div>
   </div>
 
   <!-- Site Footer -->
   <footer class="site-footer">
-    <div class="footer-links">
-      <a href="PRIVACY_POLICY.md">Privacy Policy</a>
-      <a href="DATA_SAFETY.md">Data Safety</a>
-      <a href="FEEDBACK_GOOGLE_SHEET_SETUP.md">Feedback Hub</a>
-      <a href="https://github.com/Ayush4Gupta/ValidPic">GitHub Repository</a>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="assets/app_icon_512.png" alt="ValidPic Icon" class="footer-logo">
+        <span class="footer-brand-name">ValidPic</span>
+        <span class="footer-brand-desc">— Free On-Device Photo &amp; Signature Resizer</span>
+      </div>
+      <div class="footer-links">
+        <a href="PRIVACY_POLICY.md">Privacy Policy</a>
+        <a href="DATA_SAFETY.md">Data Safety</a>
+        <a href="FEEDBACK_GOOGLE_SHEET_SETUP.md">Feedback</a>
+        <a href="https://github.com/Ayush4Gupta/ValidPic">GitHub Repo</a>
+      </div>
+      <p class="footer-copy">© 2026 ValidPic. All rights reserved. Free, offline-first image processing for competitive exams and passports.</p>
+      <p class="footer-disclaimer">ValidPic is an independent utility and is not affiliated with any government agency or recruitment board.</p>
     </div>
-    <p>© 2026 ValidPic. All rights reserved. Free, offline-first photo processing for competitive examinations and passports.</p>
-    <p style="font-size: 11px; margin-top: 6px; color: #94A3B8;">ValidPic is an independent utility and is not affiliated with any government agency.</p>
   </footer>
 
   <!-- Application Logic -->

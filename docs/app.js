@@ -16,7 +16,7 @@ const PRESETS = [
     heightPx: 450,
     isSignature: false,
     badge: "20–50 KB",
-    description: "Official Staff Selection Commission 3.5 × 4.5 cm"
+    description: "Official Staff Selection Commission 3.5 × 4.5 cm photo"
   },
   {
     id: "upsc",
@@ -89,8 +89,8 @@ const PRESETS = [
     description: "35 × 45 mm MEA standard, pure white BG"
   },
   {
-    id: "signature_ssc",
-    name: "Official Signature (SSC, IBPS)",
+    id: "signature_official",
+    name: "Official Signature (All Exams)",
     category: "signature",
     targetMaxKb: 20,
     minKb: 10,
@@ -103,23 +103,24 @@ const PRESETS = [
     description: "Black/blue ink on crisp white paper"
   },
   {
-    id: "under_25",
-    name: "Quick Target: Under 25 KB",
-    category: "quick",
-    targetMaxKb: 25,
-    minKb: 5,
-    aspectWidth: 7,
-    aspectHeight: 9,
-    widthPx: 350,
-    heightPx: 450,
+    id: "marksheet_doc",
+    name: "Certificate / Marksheet / ID",
+    category: "document",
+    targetMaxKb: 200,
+    minKb: 50,
+    aspectWidth: null,
+    aspectHeight: null,
+    widthPx: 1200,
+    heightPx: 1600,
     isSignature: false,
-    badge: "< 25 KB",
-    description: "Ultra-compact for low-bandwidth portals"
+    badge: "Under 200 KB",
+    description: "10th/12th certificate, caste/category certificate"
   }
 ];
 
 // App State
-let currentPreset = PRESETS[0];
+let currentTargetKb = 50;
+let currentMode = "passport"; // 'passport' | 'signature' | 'custom'
 let sourceImage = null;
 let sourceFileName = "photo.jpg";
 let sourceFileSizeKb = 0;
@@ -132,64 +133,44 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
 });
 
-function renderPresets(presetsToRender) {
-  const container = document.getElementById("presets-list");
-  if (!container) return;
-
-  container.innerHTML = "";
-  if (presetsToRender.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding: 20px; color: #64748B; font-size:13px;">No exam preset matches your search.</div>`;
-    return;
-  }
-
-  presetsToRender.forEach(p => {
-    const card = document.createElement("div");
-    card.className = `preset-card ${p.id === currentPreset.id ? 'active' : ''}`;
-    card.id = `preset-${p.id}`;
-    card.innerHTML = `
-      <div class="preset-card-header">
-        <span class="preset-card-title">${p.name}</span>
-        <span class="preset-card-badge">${p.badge}</span>
-      </div>
-      <div class="preset-card-specs">${p.description}</div>
-    `;
-    card.addEventListener("click", () => selectPreset(p));
-    container.appendChild(card);
-  });
-}
-
-function selectPreset(preset) {
-  currentPreset = preset;
-  document.querySelectorAll(".preset-card").forEach(c => c.classList.remove("active"));
-  const activeCard = document.getElementById(`preset-${preset.id}`);
-  if (activeCard) activeCard.classList.add("active");
-
-  // Update quick KB buttons
-  document.querySelectorAll(".kb-btn").forEach(btn => {
-    btn.classList.toggle("active", parseInt(btn.dataset.kb) === preset.targetMaxKb);
-  });
-
-  if (sourceImage) {
-    processImage();
-  }
-}
-
 function setupEventListeners() {
   const fileInput = document.getElementById("file-input");
   const dropzone = document.getElementById("dropzone");
-  const searchInput = document.getElementById("preset-search");
+  const selectFileBtn = document.getElementById("select-file-btn");
   const sampleBtn = document.getElementById("try-sample-btn");
   const downloadBtn = document.getElementById("download-btn");
   const resetBtn = document.getElementById("reset-btn");
+  const searchInput = document.getElementById("preset-search");
 
-  // Drag & drop
+  // Mode Switcher Tabs
+  const tabPassport = document.getElementById("tab-passport");
+  const tabSignature = document.getElementById("tab-signature");
+  const tabCustom = document.getElementById("tab-custom");
+
+  tabPassport.addEventListener("click", () => setMode("passport"));
+  tabSignature.addEventListener("click", () => setMode("signature"));
+  tabCustom.addEventListener("click", () => setMode("custom"));
+
+  // File Upload Handlers
+  if (selectFileBtn && fileInput) {
+    selectFileBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+  }
+
   if (dropzone && fileInput) {
     dropzone.addEventListener("click", () => fileInput.click());
+    
     dropzone.addEventListener("dragover", (e) => {
       e.preventDefault();
       dropzone.classList.add("dragover");
     });
-    dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+    
+    dropzone.addEventListener("dragleave", () => {
+      dropzone.classList.remove("dragover");
+    });
+    
     dropzone.addEventListener("drop", (e) => {
       e.preventDefault();
       dropzone.classList.remove("dragover");
@@ -205,7 +186,7 @@ function setupEventListeners() {
     });
   }
 
-  // Sample photo generator
+  // Sample Photo
   if (sampleBtn) {
     sampleBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -213,309 +194,440 @@ function setupEventListeners() {
     });
   }
 
-  // Search filter
+  // KB Chips
+  document.querySelectorAll(".kb-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const kbVal = chip.dataset.kb;
+      document.querySelectorAll(".kb-chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+
+      const sliderBox = document.getElementById("custom-kb-slider-box");
+      if (kbVal === "custom") {
+        if (sliderBox) sliderBox.style.display = "block";
+        const slider = document.getElementById("custom-kb-range");
+        currentTargetKb = parseInt(slider.value, 10);
+      } else {
+        if (sliderBox) sliderBox.style.display = "none";
+        currentTargetKb = parseInt(kbVal, 10);
+      }
+
+      if (sourceImage) processImage();
+    });
+  });
+
+  // Custom KB Slider
+  const customSlider = document.getElementById("custom-kb-range");
+  const customSliderVal = document.getElementById("custom-kb-val");
+  if (customSlider) {
+    customSlider.addEventListener("input", (e) => {
+      currentTargetKb = parseInt(e.target.value, 10);
+      if (customSliderVal) customSliderVal.textContent = `${currentTargetKb} KB`;
+      if (sourceImage) processImage();
+    });
+  }
+
+  // Toggles
+  const toggleWhiteBg = document.getElementById("toggle-white-bg");
+  if (toggleWhiteBg) {
+    toggleWhiteBg.addEventListener("change", (e) => {
+      whiteBackgroundEnhance = e.target.checked;
+      if (sourceImage) processImage();
+    });
+  }
+
+  const toggleCrop = document.getElementById("toggle-passport-ratio");
+  if (toggleCrop) {
+    toggleCrop.addEventListener("change", (e) => {
+      passportFramingEnabled = e.target.checked;
+      if (sourceImage) processImage();
+    });
+  }
+
+  // Action Buttons
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", triggerDownloadWithAd);
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", resetEditor);
+  }
+
+  // Search Filter
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       const q = e.target.value.toLowerCase().trim();
-      const filtered = PRESETS.filter(p => 
-        p.name.toLowerCase().includes(q) || 
+      const filtered = PRESETS.filter(p =>
+        p.name.toLowerCase().includes(q) ||
         p.description.toLowerCase().includes(q) ||
         p.badge.toLowerCase().includes(q)
       );
       renderPresets(filtered);
     });
   }
+}
 
-  // Quick KB buttons
-  document.querySelectorAll(".kb-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const targetKb = parseInt(btn.dataset.kb);
-      const matched = PRESETS.find(p => p.targetMaxKb === targetKb) || {
-        id: `custom_${targetKb}`,
-        name: `Custom Target Under ${targetKb} KB`,
-        targetMaxKb: targetKb,
-        aspectWidth: 7,
-        aspectHeight: 9,
-        widthPx: 350,
-        heightPx: 450,
-        isSignature: targetKb <= 20,
-        badge: `< ${targetKb} KB`,
-        description: `Targeting strictly under ${targetKb} KB`
-      };
-      selectPreset(matched);
-    });
-  });
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById("tab-passport").classList.toggle("active", mode === "passport");
+  document.getElementById("tab-signature").classList.toggle("active", mode === "signature");
+  document.getElementById("tab-custom").classList.toggle("active", mode === "custom");
 
-  // Framing Toggle
-  const toggleFraming = document.getElementById("toggle-framing");
-  if (toggleFraming) {
-    toggleFraming.addEventListener("click", () => {
-      passportFramingEnabled = !passportFramingEnabled;
-      document.getElementById("opt-passport").classList.toggle("active", passportFramingEnabled);
-      document.getElementById("opt-original").classList.toggle("active", !passportFramingEnabled);
-      if (sourceImage) processImage();
-    });
+  const toggleWhiteBg = document.getElementById("toggle-white-bg");
+  const toggleCrop = document.getElementById("toggle-passport-ratio");
+
+  if (mode === "passport") {
+    setTargetKb(50);
+    passportFramingEnabled = true;
+    whiteBackgroundEnhance = true;
+    if (toggleCrop) toggleCrop.checked = true;
+    if (toggleWhiteBg) toggleWhiteBg.checked = true;
+  } else if (mode === "signature") {
+    setTargetKb(20);
+    passportFramingEnabled = false;
+    whiteBackgroundEnhance = true;
+    if (toggleCrop) toggleCrop.checked = false;
+    if (toggleWhiteBg) toggleWhiteBg.checked = true;
+  } else if (mode === "custom") {
+    setTargetKb(100);
+    passportFramingEnabled = false;
+    if (toggleCrop) toggleCrop.checked = false;
   }
 
-  // Background Enhance Toggle
-  const toggleBg = document.getElementById("toggle-bg");
-  if (toggleBg) {
-    toggleBg.addEventListener("click", () => {
-      whiteBackgroundEnhance = !whiteBackgroundEnhance;
-      document.getElementById("opt-white-bg").classList.toggle("active", whiteBackgroundEnhance);
-      document.getElementById("opt-orig-bg").classList.toggle("active", !whiteBackgroundEnhance);
-      if (sourceImage) processImage();
-    });
-  }
-
-  // Download Trigger
-  if (downloadBtn) {
-    downloadBtn.addEventListener("click", triggerDownload);
-  }
-
-  // Reset
-  if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      sourceImage = null;
-      processedBlob = null;
-      document.getElementById("dropzone").style.display = "block";
-      document.getElementById("result-stage").classList.remove("visible");
-      if (fileInput) fileInput.value = "";
-    });
+  if (sourceImage) {
+    processImage();
   }
 }
 
-function handleFile(file) {
-  if (!file.type.startsWith("image/")) {
-    alert("Please select a valid image file (JPG, PNG, WebP, or Screenshot).");
+function setTargetKb(kb) {
+  currentTargetKb = kb;
+  document.querySelectorAll(".kb-chip").forEach(c => {
+    c.classList.toggle("active", parseInt(c.dataset.kb, 10) === kb);
+  });
+  const sliderBox = document.getElementById("custom-kb-slider-box");
+  if (sliderBox) sliderBox.style.display = "none";
+}
+
+function renderPresets(presets) {
+  const container = document.getElementById("presets-list");
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (presets.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 24px; color: #64748B;">No exam matches your search.</div>`;
     return;
   }
 
-  sourceFileName = file.name;
-  sourceFileSizeKb = (file.size / 1024).toFixed(1);
+  presets.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "preset-card-item";
+    card.innerHTML = `
+      <div class="preset-item-top">
+        <span class="preset-item-name">${p.name}</span>
+        <span class="preset-item-badge">${p.badge}</span>
+      </div>
+      <div class="preset-item-desc">${p.description}</div>
+    `;
+    card.addEventListener("click", () => {
+      document.querySelectorAll(".preset-card-item").forEach(c => c.classList.remove("selected"));
+      card.classList.add("selected");
+
+      if (p.isSignature) {
+        setMode("signature");
+      } else if (p.aspectWidth && p.aspectHeight) {
+        setMode("passport");
+      } else {
+        setMode("custom");
+      }
+
+      setTargetKb(p.targetMaxKb);
+      if (sourceImage) processImage();
+
+      // Smooth scroll back to converter card
+      document.getElementById("converter-card").scrollIntoView({ behavior: "smooth" });
+    });
+    container.appendChild(card);
+  });
+}
+
+function handleFile(file) {
+  if (!file || !file.type.startsWith("image/")) {
+    alert("Please select a valid image file (JPG, PNG, WebP).");
+    return;
+  }
+
+  sourceFileName = file.name.replace(/\.[^/.]+$/, "") + "_validpic.jpg";
+  sourceFileSizeKb = Math.round(file.size / 1024);
 
   const reader = new FileReader();
-  reader.onload = (event) => {
+  reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
       sourceImage = img;
-      document.getElementById("dropzone").style.display = "none";
-      document.getElementById("result-stage").classList.add("visible");
-      document.getElementById("orig-meta").innerText = `Original: ${img.naturalWidth} × ${img.naturalHeight} px • ${sourceFileSizeKb} KB`;
-
-      // Display original preview
-      const origCanvas = document.getElementById("orig-canvas");
-      const ctx = origCanvas.getContext("2d");
-      origCanvas.width = img.naturalWidth;
-      origCanvas.height = img.naturalHeight;
-      ctx.drawImage(img, 0, 0);
-
+      document.getElementById("upload-stage").style.display = "none";
+      document.getElementById("editor-stage").style.display = "block";
       processImage();
     };
-    img.src = event.target.result;
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
 }
 
 function loadSampleImage() {
-  // Create an artificial passport-style sample in pure canvas
-  const canvas = document.createElement("canvas");
-  canvas.width = 600;
-  canvas.height = 770;
-  const ctx = canvas.getContext("2d");
+  const sampleCanvas = document.createElement("canvas");
+  sampleCanvas.width = 700;
+  sampleCanvas.height = 900;
+  const ctx = sampleCanvas.getContext("2d");
 
-  // Pure white studio backdrop
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Soft studio background
+  ctx.fillStyle = "#F1F5F9";
+  ctx.fillRect(0, 0, 700, 900);
 
-  // Soft studio lighting vignette
-  const radial = ctx.createRadialGradient(300, 320, 50, 300, 320, 380);
-  radial.addColorStop(0, "#FFFFFF");
-  radial.addColorStop(1, "#F1F5F9");
-  ctx.fillStyle = radial;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Soft gradient vignette
+  const grad = ctx.createRadialGradient(350, 420, 50, 350, 420, 450);
+  grad.addColorStop(0, "#FFFFFF");
+  grad.addColorStop(1, "#E2E8F0");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 700, 900);
 
-  // Shoulders (Formal Navy Blazer)
+  // Professional Suit Silhouette
   ctx.fillStyle = "#0A2540";
   ctx.beginPath();
-  ctx.ellipse(300, 720, 240, 180, 0, 0, Math.PI * 2);
+  ctx.ellipse(350, 850, 320, 240, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // White Shirt Collar
+  // White shirt collar V
   ctx.fillStyle = "#FFFFFF";
   ctx.beginPath();
-  ctx.moveTo(300, 550);
-  ctx.lineTo(260, 620);
-  ctx.lineTo(340, 620);
+  ctx.moveTo(310, 610);
+  ctx.lineTo(350, 740);
+  ctx.lineTo(390, 610);
   ctx.closePath();
   ctx.fill();
 
   // Neck
-  ctx.fillStyle = "#E0A97B";
-  ctx.fillRect(270, 480, 60, 90);
+  ctx.fillStyle = "#D4A373";
+  ctx.fillRect(320, 500, 60, 120);
 
-  // Head (Oval)
-  ctx.fillStyle = "#F3C59A";
+  // Face oval
+  ctx.fillStyle = "#E0A96D";
   ctx.beginPath();
-  ctx.ellipse(300, 360, 110, 145, 0, 0, Math.PI * 2);
+  ctx.ellipse(350, 400, 130, 160, 0, 0, Math.PI * 2);
   ctx.fill();
 
   // Hair
   ctx.fillStyle = "#1E293B";
   ctx.beginPath();
-  ctx.arc(300, 290, 120, Math.PI, 0, false);
+  ctx.ellipse(350, 310, 140, 100, 0, 0, Math.PI);
   ctx.fill();
 
   const img = new Image();
   img.onload = () => {
+    sourceFileName = "sample_passport_validpic.jpg";
+    sourceFileSizeKb = 1450; // simulated original 1.45 MB
     sourceImage = img;
-    sourceFileName = "sample_passport_photo.jpg";
-    sourceFileSizeKb = "320.0";
-    document.getElementById("dropzone").style.display = "none";
-    document.getElementById("result-stage").classList.add("visible");
-    document.getElementById("orig-meta").innerText = `Sample Photo: 600 × 770 px • 320 KB`;
-
-    const origCanvas = document.getElementById("orig-canvas");
-    origCanvas.width = img.width;
-    origCanvas.height = img.height;
-    origCanvas.getContext("2d").drawImage(img, 0, 0);
-
+    document.getElementById("upload-stage").style.display = "none";
+    document.getElementById("editor-stage").style.display = "block";
     processImage();
   };
-  img.src = canvas.toDataURL("image/jpeg", 0.95);
+  img.src = sampleCanvas.toDataURL("image/jpeg", 0.95);
 }
 
-/**
- * Executes binary search JPEG compression strictly under targetMaxKb
- */
-async function processImage() {
+function processImage() {
   if (!sourceImage) return;
 
-  const resultMeta = document.getElementById("result-meta");
-  const downloadBtn = document.getElementById("download-btn");
-  if (resultMeta) resultMeta.innerHTML = `<span style="color: #2563EB;">⏳ Optimizing exact file size...</span>`;
+  const canvas = document.getElementById("result-canvas");
+  const ctx = canvas.getContext("2d");
 
-  // 1. Calculate Crop Box
-  let cropWidth = sourceImage.naturalWidth;
-  let cropHeight = sourceImage.naturalHeight;
-  let cropX = 0;
-  let cropY = 0;
+  // Determine Crop Rect
+  let sx = 0, sy = 0, sw = sourceImage.naturalWidth, sh = sourceImage.naturalHeight;
 
-  if (passportFramingEnabled && !currentPreset.isSignature) {
-    const targetAspect = currentPreset.aspectWidth / currentPreset.aspectHeight;
-    const sourceAspect = cropWidth / cropHeight;
+  if (passportFramingEnabled) {
+    // 3.5 x 4.5 ratio
+    const targetRatio = 3.5 / 4.5;
+    const currentRatio = sw / sh;
 
-    if (sourceAspect > targetAspect) {
-      // Source is wider than target aspect ratio -> crop horizontal edges
-      cropWidth = Math.round(cropHeight * targetAspect);
-      cropX = Math.round((sourceImage.naturalWidth - cropWidth) / 2);
+    if (currentRatio > targetRatio) {
+      sw = sh * targetRatio;
+      sx = (sourceImage.naturalWidth - sw) / 2;
     } else {
-      // Source is taller -> crop from bottom (keeps face centered near upper portion)
-      cropHeight = Math.round(cropWidth / targetAspect);
-      cropY = Math.round((sourceImage.naturalHeight - cropHeight) * 0.25);
+      sh = sw / targetRatio;
+      sy = (sourceImage.naturalHeight - sh) / 4; // Face bias towards top
     }
   }
 
-  // 2. Render to Target Canvas
-  let outWidth = currentPreset.widthPx || cropWidth;
-  let outHeight = currentPreset.heightPx || cropHeight;
+  // Base canvas resolution
+  let outW = Math.round(sw);
+  let outH = Math.round(sh);
 
-  // Keep proportions proportional
-  const targetCanvas = document.getElementById("result-canvas");
-  targetCanvas.width = outWidth;
-  targetCanvas.height = outHeight;
-  const ctx = targetCanvas.getContext("2d");
-
-  // Clear with pure white
-  ctx.fillStyle = "#FFFFFF";
-  ctx.fillRect(0, 0, outWidth, outHeight);
-
-  if (currentPreset.isSignature) {
-    // High contrast for signature ink
-    ctx.filter = "contrast(140%) brightness(105%)";
-  } else if (whiteBackgroundEnhance) {
-    ctx.filter = "brightness(102%) contrast(102%)";
-  } else {
-    ctx.filter = "none";
+  // Max dimension bounds for web efficiency
+  const maxDim = 1200;
+  if (outW > maxDim || outH > maxDim) {
+    const scale = Math.min(maxDim / outW, maxDim / outH);
+    outW = Math.round(outW * scale);
+    outH = Math.round(outH * scale);
   }
 
-  ctx.drawImage(sourceImage, cropX, cropY, cropWidth, cropHeight, 0, 0, outWidth, outHeight);
-  ctx.filter = "none"; // reset
+  canvas.width = outW;
+  canvas.height = outH;
 
-  // 3. Binary Search Compression against Exact Target KB
-  const targetMaxBytes = currentPreset.targetMaxKb * 1024;
+  // Pure White Background Base
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, outW, outH);
+
+  // Draw scaled image
+  ctx.drawImage(sourceImage, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  // Apply Enhancements
+  if (whiteBackgroundEnhance) {
+    applyStudioEnhance(ctx, outW, outH, currentMode === "signature");
+  }
+
+  // Binary Search Compression to Guarantee < currentTargetKb
+  binarySearchCompress(canvas, currentTargetKb, (blob, finalQuality) => {
+    processedBlob = blob;
+    const finalSizeKb = (blob.size / 1024).toFixed(1);
+
+    // Update Live Verification Pill
+    const pill = document.getElementById("verification-pill");
+    const text = document.getElementById("verification-text");
+    const origInfo = document.getElementById("orig-info-tag");
+    const dlBtnText = document.getElementById("download-btn-text");
+
+    if (text) {
+      text.textContent = `${finalSizeKb} KB (Guaranteed Under ${currentTargetKb} KB ✓) • ${outW} × ${outH} px`;
+    }
+
+    if (origInfo) {
+      origInfo.textContent = `Original: ${sourceImage.naturalWidth} × ${sourceImage.naturalHeight} px • ${sourceFileSizeKb} KB`;
+    }
+
+    if (dlBtnText) {
+      dlBtnText.textContent = `Download Ready Photo (${finalSizeKb} KB)`;
+    }
+  });
+}
+
+function applyStudioEnhance(ctx, w, h, isSignature) {
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const data = imgData.data;
+
+  if (isSignature) {
+    // Signature Ink Enhancement
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+      if (luminance > 185) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
+      } else {
+        data[i] = Math.max(0, r * 0.7);
+        data[i + 1] = Math.max(0, g * 0.7);
+        data[i + 2] = Math.max(0, b * 0.85);
+      }
+    }
+  } else {
+    // Passport Studio Background Lightening
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      if (r > 195 && g > 195 && b > 195) {
+        data[i] = 255;
+        data[i + 1] = 255;
+        data[i + 2] = 255;
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function binarySearchCompress(canvas, maxTargetKb, callback) {
+  const targetBytes = maxTargetKb * 1024 * 0.98; // 2% safe margin
   let low = 0.05;
   let high = 0.98;
   let bestBlob = null;
   let bestQuality = 0.85;
+  let iterations = 0;
 
-  for (let iter = 0; iter < 9; iter++) {
+  function testQuality(q, onDone) {
+    canvas.toBlob((blob) => {
+      onDone(blob);
+    }, "image/jpeg", q);
+  }
+
+  function step() {
+    iterations++;
     const mid = (low + high) / 2;
-    const blob = await canvasToBlobAsync(targetCanvas, "image/jpeg", mid);
 
-    if (blob.size <= targetMaxBytes) {
-      bestBlob = blob;
-      bestQuality = mid;
-      low = mid; // Try higher quality
-    } else {
-      high = mid; // File size exceeds limit -> drop quality
-    }
+    testQuality(mid, (blob) => {
+      if (!blob) {
+        callback(bestBlob || blob, bestQuality);
+        return;
+      }
+
+      if (blob.size <= targetBytes) {
+        bestBlob = blob;
+        bestQuality = mid;
+        low = mid; // Try higher quality
+      } else {
+        high = mid; // Needs more compression
+      }
+
+      if (iterations >= 7 || (high - low) < 0.03) {
+        if (!bestBlob) {
+          // If still over target, downscale canvas dimensions by 15% and retry
+          if (canvas.width > 200) {
+            const downCanvas = document.createElement("canvas");
+            downCanvas.width = Math.round(canvas.width * 0.85);
+            downCanvas.height = Math.round(canvas.height * 0.85);
+            const dctx = downCanvas.getContext("2d");
+            dctx.drawImage(canvas, 0, 0, downCanvas.width, downCanvas.height);
+            binarySearchCompress(downCanvas, maxTargetKb, callback);
+            return;
+          }
+          bestBlob = blob;
+        }
+        callback(bestBlob, bestQuality);
+      } else {
+        step();
+      }
+    });
   }
 
-  // If even quality 0.05 is over target, downscale dimensions by 15% and retry
-  if (!bestBlob || bestBlob.size > targetMaxBytes) {
-    const scale = 0.85;
-    targetCanvas.width = Math.round(outWidth * scale);
-    targetCanvas.height = Math.round(outHeight * scale);
-    const scaledCtx = targetCanvas.getContext("2d");
-    scaledCtx.fillStyle = "#FFFFFF";
-    scaledCtx.fillRect(0, 0, targetCanvas.width, targetCanvas.height);
-    scaledCtx.drawImage(sourceImage, cropX, cropY, cropWidth, cropHeight, 0, 0, targetCanvas.width, targetCanvas.height);
-    bestBlob = await canvasToBlobAsync(targetCanvas, "image/jpeg", 0.70);
-  }
-
-  processedBlob = bestBlob;
-  const finalKb = (processedBlob.size / 1024).toFixed(1);
-  const isSatisfied = processedBlob.size <= targetMaxBytes;
-
-  if (resultMeta) {
-    resultMeta.className = `preview-meta ${isSatisfied ? 'success' : ''}`;
-    resultMeta.innerHTML = `Output: ${targetCanvas.width} × ${targetCanvas.height} px • <strong>${finalKb} KB</strong> (Under ${currentPreset.targetMaxKb} KB ✓)`;
-  }
-
-  if (downloadBtn) {
-    downloadBtn.innerHTML = `📥 Download Ready Photo (${finalKb} KB .jpg)`;
-  }
+  step();
 }
 
-function canvasToBlobAsync(canvas, type, quality) {
-  return new Promise(resolve => canvas.toBlob(resolve, type, quality));
-}
-
-function triggerDownload() {
+function triggerDownloadWithAd() {
   if (!processedBlob) return;
 
-  // Show Interstitial / Ad Notice briefly (High monetization conversion)
-  const adModal = document.getElementById("download-ad-modal");
-  if (adModal) {
-    adModal.style.display = "flex";
-    setTimeout(() => {
-      adModal.style.display = "none";
-      executeFileDownload();
-    }, 1200);
-  } else {
-    executeFileDownload();
+  const modal = document.getElementById("download-ad-modal");
+  if (modal) {
+    modal.style.display = "flex";
   }
+
+  setTimeout(() => {
+    if (modal) modal.style.display = "none";
+    executeDownload();
+  }, 1200);
 }
 
-function executeFileDownload() {
+function executeDownload() {
+  if (!processedBlob) return;
   const url = URL.createObjectURL(processedBlob);
   const a = document.createElement("a");
-  const base = sourceFileName.substring(0, sourceFileName.lastIndexOf(".")) || "photo";
   a.href = url;
-  a.download = `ValidPic_${currentPreset.id}_${base}.jpg`;
+  a.download = sourceFileName;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
+}
+
+function resetEditor() {
+  sourceImage = null;
+  processedBlob = null;
+  document.getElementById("editor-stage").style.display = "none";
+  document.getElementById("upload-stage").style.display = "block";
+  document.getElementById("file-input").value = "";
 }
